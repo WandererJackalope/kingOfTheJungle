@@ -31,7 +31,7 @@ ranks = ['Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', '
 deck = [] # makes a list
 for x in suits: # loops though suits
     for y in ranks: # loops though ranks
-        deck.append(str(y) + " of " + str(x)) # adds rank to suit... "2" + " of " + "Clubs" = "2 of Clubs"
+        deck.append(str(y) + "_of_" + str(x)) # adds rank to suit... "2" + " of " + "Clubs" = "2_of_Clubs"
 
 
 # function

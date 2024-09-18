@@ -1,0 +1,1 @@
+width times 1.4 = height for cards
