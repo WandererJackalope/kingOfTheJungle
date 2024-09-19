@@ -99,6 +99,10 @@ def blackjack_start_up(): # does the first steps for any blackjack game
     house_hand.append(pull_card())
     house_hand.append(pull_card())
 
+def load_and_display_image(file_path: str, image_position): # this func with load the image and display the image off the given file path and location
+    image = pygame.image.load(file_path)
+    screen.blit(image, image_position)
+
 
 # Screen dimensions
 SCREEN_WIDTH, SCREEN_HEIGHT = 1440, 960
@@ -192,6 +196,10 @@ while True:
 
         # Stay button
         draw_button("Stay", stay_button_rect, GRAY)
+
+
+        # displays the card image
+        load_and_display_image('assets/Ace_of_Diamonds.png', (100,100)) # file path - position
 
 
         # Displays a text that can change for "Player Hand"
