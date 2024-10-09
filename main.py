@@ -85,6 +85,7 @@ def blackjack_stay(): # this ends the turn for the player
     global player_coins
     # checks for bust
     if blackjack_hand_value_checker(player_hand) > 21:
+        player_coins -= player_bet
         return "player bust - player's bet is taken"
     # house takes thir turn
     blackjack_house_plays()
@@ -188,6 +189,14 @@ while True:
                     if hit_button_rect.collidepoint(event.pos):
                         add_card_to_hand()
                         if blackjack_hand_value_checker(player_hand) > 21:
+                            blackjack_turn_ended = True
+                            blackjack_outcome = blackjack_stay()
+                # "Double Down" button this calls the add_card_to_hand function
+                if event.type == pygame.MOUSEBUTTONDOWN: # Check if the button is clicked
+                    if double_down_button_rect.collidepoint(event.pos):
+                        if len(player_hand) == 2 and (player_bet * 2) <= player_coins:
+                            player_bet = player_bet * 2
+                            add_card_to_hand()
                             blackjack_turn_ended = True
                             blackjack_outcome = blackjack_stay()
                 # "Stay" button this ends the turn for the player
