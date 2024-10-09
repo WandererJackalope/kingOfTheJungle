@@ -15,6 +15,9 @@ player_hand = []
 house_hand = []
 blackjack_turn_ended = False
 blackjack_outcome = "Soup"
+blackjack_game_in_progress = False
+player_bet = 5
+player_coins = 100
 
 # Games
 main_menu = True
@@ -71,6 +74,7 @@ def blackjack_hand_value_checker(hand_of_cards):
     return value_of_hand
 
 def blackjack_stay(): # this ends the turn for the player
+    global player_coins
     # checks for bust
     if blackjack_hand_value_checker(player_hand) > 21:
         return "player bust - player's bet is taken"
@@ -78,12 +82,15 @@ def blackjack_stay(): # this ends the turn for the player
     blackjack_house_plays()
     # checks if play wins, ties, loses
     if blackjack_hand_value_checker(house_hand) > 21:
+        player_coins += player_bet * 2
         return "house bust - player wins - bet doubled"
     elif blackjack_hand_value_checker(player_hand) > blackjack_hand_value_checker(house_hand):
+        player_coins += player_bet * 2
         return "player wins - bet doubled"
     elif blackjack_hand_value_checker(player_hand) == blackjack_hand_value_checker(house_hand):
         return "tie - player's bet is not taken"
     elif blackjack_hand_value_checker(player_hand) < blackjack_hand_value_checker(house_hand):
+        player_coins -= player_bet
         return "player lost - player's bet is taken"
 
 def blackjack_house_plays():
@@ -98,6 +105,7 @@ def blackjack_start_up(): # does the first steps for any blackjack game
     player_hand.append(pull_card())
     house_hand.append(pull_card())
     house_hand.append(pull_card())
+    return True
 
 def load_and_display_image(file_path: str, image_position): # this func with load the image and display the image off the given file path and location
     image = pygame.image.load(file_path)
@@ -127,11 +135,16 @@ button_height = (SCREEN_HEIGHT / 100) * 5
 
 # Button properties - position (0,0) is top left corner - Position (x,y) - size (x,y) of the button
 blackjack_button_rect = pygame.Rect((SCREEN_WIDTH / 2) - (button_width / 2), (SCREEN_HEIGHT / 3) - (button_height / 2), button_width, button_height)
+ready_button_rect = pygame.Rect((SCREEN_WIDTH / 2) - (button_width / 2), ((SCREEN_HEIGHT / 16) * 10) - (button_height / 2), button_width, button_height)
 # Blackjack buttons - hit - double down - spilt - stay
 hit_button_rect = pygame.Rect(((SCREEN_WIDTH / 16) * 5) - (button_width / 2), (SCREEN_HEIGHT / 2) - (button_height / 2), button_width, button_height)
 double_down_button_rect = pygame.Rect(((SCREEN_WIDTH / 16) * 7) - (button_width / 2), (SCREEN_HEIGHT / 2) - (button_height / 2), button_width, button_height)
 spilt_button_rect = pygame.Rect(((SCREEN_WIDTH / 16) * 9) - (button_width / 2), (SCREEN_HEIGHT / 2) - (button_height / 2), button_width, button_height)
 stay_button_rect = pygame.Rect(((SCREEN_WIDTH / 16) * 11) - (button_width / 2), (SCREEN_HEIGHT / 2) - (button_height / 2), button_width, button_height)
+# Blackjack bet buttons - raise - lower
+raise_button_rect = pygame.Rect(((SCREEN_WIDTH / 16) * 2) - (button_width / 2), ((SCREEN_HEIGHT / 16) * 7) - (button_height / 2), button_width, button_height)
+lower_button_rect = pygame.Rect(((SCREEN_WIDTH / 16) * 2) - (button_width / 2), ((SCREEN_HEIGHT / 16) * 9) - (button_height / 2), button_width, button_height)
+# TEST
 test_buttton_rect = pygame.Rect(100,50,20,60)
 
 
@@ -148,22 +161,35 @@ while True:
                 if blackjack_button_rect.collidepoint(event.pos):
                     main_menu = False
                     playing_blackjack = True
-                    blackjack_start_up()
 
 
         if playing_blackjack: # checks if they are playing blackjack
-            # "Hit" button this calls the add_card_to_hand function
-            if event.type == pygame.MOUSEBUTTONDOWN: # Check if the button is clicked
-                if hit_button_rect.collidepoint(event.pos):
-                    add_card_to_hand()
-                    if blackjack_hand_value_checker(player_hand) > 21:
+            if blackjack_game_in_progress:
+                # "Hit" button this calls the add_card_to_hand function
+                if event.type == pygame.MOUSEBUTTONDOWN: # Check if the button is clicked
+                    if hit_button_rect.collidepoint(event.pos):
+                        add_card_to_hand()
+                        if blackjack_hand_value_checker(player_hand) > 21:
+                            blackjack_turn_ended = True
+                            blackjack_outcome = blackjack_stay()
+                # "Stay" button this ends the turn for the player
+                if event.type == pygame.MOUSEBUTTONDOWN: # Check if the button is clicked
+                    if stay_button_rect.collidepoint(event.pos):
                         blackjack_turn_ended = True
                         blackjack_outcome = blackjack_stay()
-            # "Stay" button this ends the turn for the player
+            # "Raise" button
             if event.type == pygame.MOUSEBUTTONDOWN: # Check if the button is clicked
-                if stay_button_rect.collidepoint(event.pos):
-                    blackjack_turn_ended = True
-                    blackjack_outcome = blackjack_stay()
+                if raise_button_rect.collidepoint(event.pos):
+                    player_bet = min(player_bet + 5, player_coins)
+            if blackjack_game_in_progress == False:
+                # "Lower" button
+                if event.type == pygame.MOUSEBUTTONDOWN: # Check if the button is clicked
+                    if lower_button_rect.collidepoint(event.pos):
+                        player_bet = max(player_bet - 5, 5)
+                # "Ready" button
+                if event.type == pygame.MOUSEBUTTONDOWN: # Check if the button is clicked
+                    if ready_button_rect.collidepoint(event.pos):
+                        blackjack_game_in_progress = blackjack_start_up()
             
 
             if playing_hidden: 
@@ -197,6 +223,16 @@ while True:
         # Stay button
         draw_button("Stay", stay_button_rect, GRAY)
 
+        # Raise button
+        draw_button("Raise", raise_button_rect, GRAY)
+
+        if blackjack_game_in_progress == False:
+            # Lower button
+            draw_button("Lower", lower_button_rect, GRAY)
+
+            # Ready button
+            draw_button("Ready", ready_button_rect, GRAY)
+
 
         # displays the card image
         load_and_display_image('assets/Ace_of_Diamonds.png', (100,100)) # file path - position
@@ -209,6 +245,14 @@ while True:
         # Displays a text that can change for "Player Value"
         counter_text = font.render(f"Your Hand: {blackjack_hand_value_checker(player_hand)}", True, BLACK)
         screen.blit(counter_text, (SCREEN_WIDTH // 2 - counter_text.get_width() // 2, (SCREEN_HEIGHT / 8) * 7))
+
+        # Displays a text that can change for "Player's Bet"
+        counter_text = font.render(f"Your Bet: {player_bet}", True, BLACK)
+        screen.blit(counter_text, (((SCREEN_WIDTH / 16) * 2) - (button_width / 2), (SCREEN_HEIGHT / 2)  - (counter_text.get_height() // 2)))
+
+        # Displays a text that can change for "Player's Coins"
+        counter_text = font.render(f"Your Coins: {player_coins}", True, BLACK)
+        screen.blit(counter_text, (((SCREEN_WIDTH / 16) * 14) - (button_width / 2), (SCREEN_HEIGHT / 2)  - (counter_text.get_height() // 2)))
 
         # Displays a text that can change for "House Hand"
         if blackjack_turn_ended:
