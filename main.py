@@ -13,11 +13,13 @@ pygame.init()
 # Varibles
 player_hand = []
 house_hand = []
+player_bet = 5
+player_coins = 100
+
+# Varibles - Blackjack
 blackjack_turn_ended = False
 blackjack_outcome = "Soup"
 blackjack_game_in_progress = False
-player_bet = 5
-player_coins = 100
 
 # Games
 main_menu = True
@@ -32,9 +34,15 @@ ranks = ['Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', '
 
 # Uses a list to create the deck
 deck = [] # makes a list
-for x in suits: # loops though suits
-    for y in ranks: # loops though ranks
-        deck.append(str(y) + "_of_" + str(x)) # adds rank to suit... "2" + " of " + "Clubs" = "2_of_Clubs"
+def populate_deck(): # fills the deck with cards
+    deck = [] # makes a list
+    for x in suits: # loops though suits
+        for y in ranks: # loops though ranks
+            deck.append(str(y) + "_of_" + str(x)) # adds rank to suit... "2" + " of " + "Clubs" = "2_of_Clubs"
+    return deck
+
+
+deck = populate_deck() # pre-fill
 
 
 # function
@@ -107,6 +115,16 @@ def blackjack_start_up(): # does the first steps for any blackjack game
     house_hand.append(pull_card())
     return True
 
+def blackjack_reset(): # resets the blackjack game for another round
+    player_hand.clear()
+    house_hand.clear()
+    global deck
+    deck = populate_deck()
+    global blackjack_game_in_progress
+    blackjack_game_in_progress = False
+    global blackjack_turn_ended
+    blackjack_turn_ended = False
+
 def load_and_display_image(file_path: str, image_position): # this func with load the image and display the image off the given file path and location
     image = pygame.image.load(file_path)
     screen.blit(image, image_position)
@@ -164,7 +182,7 @@ while True:
 
 
         if playing_blackjack: # checks if they are playing blackjack
-            if blackjack_game_in_progress:
+            if blackjack_game_in_progress and not blackjack_turn_ended:
                 # "Hit" button this calls the add_card_to_hand function
                 if event.type == pygame.MOUSEBUTTONDOWN: # Check if the button is clicked
                     if hit_button_rect.collidepoint(event.pos):
@@ -177,11 +195,11 @@ while True:
                     if stay_button_rect.collidepoint(event.pos):
                         blackjack_turn_ended = True
                         blackjack_outcome = blackjack_stay()
-            # "Raise" button
-            if event.type == pygame.MOUSEBUTTONDOWN: # Check if the button is clicked
-                if raise_button_rect.collidepoint(event.pos):
-                    player_bet = min(player_bet + 5, player_coins)
             if blackjack_game_in_progress == False:
+                # "Raise" button
+                if event.type == pygame.MOUSEBUTTONDOWN: # Check if the button is clicked
+                    if raise_button_rect.collidepoint(event.pos):
+                        player_bet = min(player_bet + 5, player_coins)
                 # "Lower" button
                 if event.type == pygame.MOUSEBUTTONDOWN: # Check if the button is clicked
                     if lower_button_rect.collidepoint(event.pos):
@@ -190,6 +208,11 @@ while True:
                 if event.type == pygame.MOUSEBUTTONDOWN: # Check if the button is clicked
                     if ready_button_rect.collidepoint(event.pos):
                         blackjack_game_in_progress = blackjack_start_up()
+            if blackjack_turn_ended:
+                # "Play Again" button
+                if event.type == pygame.MOUSEBUTTONDOWN: # Check if the button is clicked
+                    if ready_button_rect.collidepoint(event.pos):
+                        blackjack_reset()
             
 
             if playing_hidden: 
@@ -223,15 +246,18 @@ while True:
         # Stay button
         draw_button("Stay", stay_button_rect, GRAY)
 
-        # Raise button
-        draw_button("Raise", raise_button_rect, GRAY)
-
         if blackjack_game_in_progress == False:
+            # Raise button
+            draw_button("Raise", raise_button_rect, GRAY)
             # Lower button
             draw_button("Lower", lower_button_rect, GRAY)
 
             # Ready button
             draw_button("Ready", ready_button_rect, GRAY)
+        
+        if blackjack_turn_ended:
+            # Play Again button
+            draw_button("Play Again", ready_button_rect, GRAY)
 
 
         # displays the card image
