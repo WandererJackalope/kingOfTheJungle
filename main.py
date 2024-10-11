@@ -14,7 +14,7 @@ pygame.init()
 player_hand = []
 house_hand = []
 player_bet = 5
-player_coins = 100
+player_tokens = 100
 
 # Varibles - Blackjack
 blackjack_turn_ended = False
@@ -82,24 +82,24 @@ def blackjack_hand_value_checker(hand_of_cards):
     return value_of_hand
 
 def blackjack_stay(): # this ends the turn for the player
-    global player_coins
+    global player_tokens
     # checks for bust
     if blackjack_hand_value_checker(player_hand) > 21:
-        player_coins -= player_bet
+        player_tokens -= player_bet
         return "player bust - player's bet is taken"
     # house takes thir turn
     blackjack_house_plays()
     # checks if play wins, ties, loses
     if blackjack_hand_value_checker(house_hand) > 21:
-        player_coins += player_bet * 2
+        player_tokens += player_bet * 2
         return "house bust - player wins - bet doubled"
     elif blackjack_hand_value_checker(player_hand) > blackjack_hand_value_checker(house_hand):
-        player_coins += player_bet * 2
+        player_tokens += player_bet * 2
         return "player wins - bet doubled"
     elif blackjack_hand_value_checker(player_hand) == blackjack_hand_value_checker(house_hand):
         return "tie - player's bet is not taken"
     elif blackjack_hand_value_checker(player_hand) < blackjack_hand_value_checker(house_hand):
-        player_coins -= player_bet
+        player_tokens -= player_bet
         return "player lost - player's bet is taken"
 
 def blackjack_house_plays():
@@ -194,7 +194,7 @@ while True:
                 # "Double Down" button this calls the add_card_to_hand function
                 if event.type == pygame.MOUSEBUTTONDOWN: # Check if the button is clicked
                     if double_down_button_rect.collidepoint(event.pos):
-                        if len(player_hand) == 2 and (player_bet * 2) <= player_coins:
+                        if len(player_hand) == 2 and (player_bet * 2) <= player_tokens:
                             player_bet = player_bet * 2
                             add_card_to_hand()
                             blackjack_turn_ended = True
@@ -208,7 +208,7 @@ while True:
                 # "Raise" button
                 if event.type == pygame.MOUSEBUTTONDOWN: # Check if the button is clicked
                     if raise_button_rect.collidepoint(event.pos):
-                        player_bet = min(player_bet + 5, player_coins)
+                        player_bet = min(player_bet + 5, player_tokens)
                 # "Lower" button
                 if event.type == pygame.MOUSEBUTTONDOWN: # Check if the button is clicked
                     if lower_button_rect.collidepoint(event.pos):
@@ -286,7 +286,7 @@ while True:
         screen.blit(counter_text, (((SCREEN_WIDTH / 16) * 2) - (button_width / 2), (SCREEN_HEIGHT / 2)  - (counter_text.get_height() // 2)))
 
         # Displays a text that can change for "Player's Coins"
-        counter_text = font.render(f"Your Coins: {player_coins}", True, BLACK)
+        counter_text = font.render(f"Your Coins: {player_tokens}", True, BLACK)
         screen.blit(counter_text, (((SCREEN_WIDTH / 16) * 14) - (button_width / 2), (SCREEN_HEIGHT / 2)  - (counter_text.get_height() // 2)))
 
         # Displays a text that can change for "House Hand"
