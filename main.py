@@ -10,13 +10,13 @@ import sys
 pygame.init()
 
 
-# Varibles
+# Variables
 player_hand = []
 house_hand = []
 player_bet = 5
 player_tokens = 100
 
-# Varibles - Blackjack
+# Variables - Blackjack
 blackjack_turn_ended = False
 blackjack_outcome = "Soup"
 blackjack_game_in_progress = False
