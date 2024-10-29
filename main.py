@@ -21,6 +21,13 @@ blackjack_turn_ended = False
 blackjack_outcome = "Soup"
 blackjack_game_in_progress = False
 
+# Constants
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+GRAY = (200, 200, 200)
+CASINO_GREEN = (31, 124, 77)
+SCREEN_WIDTH, SCREEN_HEIGHT = 1440, 960
+
 # Games
 main_menu = True
 playing_blackjack = False
@@ -132,16 +139,8 @@ def load_and_display_image(file_path: str, image_position): # this func with loa
 
 
 # Screen dimensions
-SCREEN_WIDTH, SCREEN_HEIGHT = 1440, 960
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
 pygame.display.set_caption("Casino_Sim")
-
-
-# Colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-GRAY = (200, 200, 200)
-CASINO_GREEN = (31, 124, 77)
 
 
 # Font
