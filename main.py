@@ -26,7 +26,7 @@ WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
 GRAY = (200, 200, 200)
 CASINO_GREEN = (31, 124, 77)
-SCREEN_WIDTH, SCREEN_HEIGHT = 1440, 960
+SCREEN_WIDTH, SCREEN_HEIGHT = 1280, 720
 
 # Games
 main_menu = True
@@ -144,7 +144,7 @@ pygame.display.set_caption("Casino_Sim")
 
 
 # Font
-font = pygame.font.Font(None, 36)
+font = pygame.font.Font(None, 32)
 
 
 # Button sizes
