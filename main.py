@@ -10,13 +10,13 @@ import sys
 pygame.init()
 
 
-# Varibles
+# Variables
 player_hand = []
 house_hand = []
 player_bet = 5
 player_tokens = 100
 
-# Varibles - Blackjack
+# Variables - Blackjack
 blackjack_turn_ended = False
 blackjack_outcome = "Soup"
 blackjack_game_in_progress = False
@@ -59,7 +59,7 @@ def draw_button(text, rect, color): # Draws a button with text on the screen.
 
 def add_card_to_hand(): # calls the pull_card funtion and appends the card to the player's hand - TEMP FUNCTION
     player_hand.append(pull_card())
-    print(player_hand)
+    #print(player_hand)
 
 def blackjack_hand_value_checker(hand_of_cards):
     value_of_hand = 0
