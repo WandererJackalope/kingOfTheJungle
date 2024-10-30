@@ -18,7 +18,7 @@ player_tokens = 100
 
 # Variables - Blackjack
 blackjack_turn_ended = False
-blackjack_outcome = "Soup"
+blackjack_outcome = " "
 blackjack_game_in_progress = False
 
 # Constants
