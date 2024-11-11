@@ -133,7 +133,7 @@ def load_and_display_image(file_path: str, image_position): # this func with loa
 
 # Screen dimensions
 SCREEN_WIDTH, SCREEN_HEIGHT = 1440, 960
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE)
 pygame.display.set_caption("Casino_Sim")
 
 
