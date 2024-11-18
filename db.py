@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import psycopg2
+# import hashlib
 
 
 class InvalidLogin(Exception):
@@ -20,11 +21,13 @@ class GameDB:
     def __init__(self, db_conn_uri: str):
         self.conn = psycopg2.connect(db_conn_uri)
 
+    
+
     def validate_player_login(self, name: str, password: str) -> int:
         """
-        validates user name and password and returns the user id.
-        throws InvalidLogin when the login is incorrect
-        returns an integer id of the user on successful validation
+        Validates username and password and returns the user ID.
+        Raises InvalidLogin when the login is incorrect.
+        Returns an integer ID of the user on successful validation.
         """
         pass
 
@@ -37,12 +40,25 @@ class GameDB:
 
     def log_game(self, player_id: int, won: bool, new_token_balance: int):
         """
-        logs game results
-        Params:
-        won: bool: True if player won the game, False if they lost the game
-        new_token_count: the number of tokens we currently have
+        Logs game results and updates player statistics
+        
+        Args:
+            player_id: int - The ID of the player
+            won: bool - True if player won the game, False if they lost
+            new_token_balance: int - The number of tokens the player now has
         """
-        pass
+
+        with self.conn.cursor() as cur:
+            colm = "win_count" if won else "loss_count"
+            query = f'UPDATE "Player" SET tokens = %(tokens)s, {colm} = {colm} + 1 WHERE id = %(id)s'
+            values = {
+            'tokens': new_token_balance,
+            'id': player_id
+             }
+            cur.execute(query, values)
+            self.conn.commit()  
+
+        
 
     def get_player_info(self, player_id: int) -> Player:
         """
