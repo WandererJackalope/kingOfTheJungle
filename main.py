@@ -10,21 +10,27 @@ import sys
 pygame.init()
 
 
-# Varibles
+# Variables
 player_hand = []
 house_hand = []
 player_bet = 5
 player_tokens = 100
 
-# Varibles - Blackjack
+# Variables - Blackjack
 blackjack_turn_ended = False
-blackjack_outcome = "Soup"
+blackjack_outcome = " "
 blackjack_game_in_progress = False
+
+# Constants
+WHITE = (255, 255, 255)
+BLACK = (0, 0, 0)
+GRAY = (200, 200, 200)
+CASINO_GREEN = (31, 124, 77)
+SCREEN_WIDTH, SCREEN_HEIGHT = 1280, 720
 
 # Games
 main_menu = True
 playing_blackjack = False
-playing_hidden = False
 
 
 # Define the suits and ranks of the deck
@@ -59,7 +65,7 @@ def draw_button(text, rect, color): # Draws a button with text on the screen.
 
 def add_card_to_hand(): # calls the pull_card funtion and appends the card to the player's hand - TEMP FUNCTION
     player_hand.append(pull_card())
-    print(player_hand)
+    #print(player_hand)
 
 def blackjack_hand_value_checker(hand_of_cards):
     value_of_hand = 0
@@ -132,20 +138,12 @@ def load_and_display_image(file_path: str, image_position): # this func with loa
 
 
 # Screen dimensions
-SCREEN_WIDTH, SCREEN_HEIGHT = 1440, 960
-screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE)
+screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE, pygame.RESIZABLE)
 pygame.display.set_caption("Casino_Sim")
 
 
-# Colors
-WHITE = (255, 255, 255)
-BLACK = (0, 0, 0)
-GRAY = (200, 200, 200)
-CASINO_GREEN = (31, 124, 77)
-
-
 # Font
-font = pygame.font.Font(None, 36)
+font = pygame.font.Font(None, 32)
 
 
 # Button sizes
@@ -155,6 +153,8 @@ button_height = (SCREEN_HEIGHT / 100) * 5
 # Button properties - position (0,0) is top left corner - Position (x,y) - size (x,y) of the button
 blackjack_button_rect = pygame.Rect((SCREEN_WIDTH / 2) - (button_width / 2), (SCREEN_HEIGHT / 3) - (button_height / 2), button_width, button_height)
 ready_button_rect = pygame.Rect((SCREEN_WIDTH / 2) - (button_width / 2), ((SCREEN_HEIGHT / 16) * 10) - (button_height / 2), button_width, button_height)
+mid_game_quit_button_rect = pygame.Rect(((SCREEN_WIDTH / 16) * 9) - (button_width / 2), ((SCREEN_HEIGHT / 16) * 10) - (button_height / 2), button_width, button_height)
+play_again_button_rect = pygame.Rect(((SCREEN_WIDTH / 16) * 7) - (button_width / 2), ((SCREEN_HEIGHT / 16) * 10) - (button_height / 2), button_width, button_height)
 # Blackjack buttons - hit - double down - spilt - stay
 hit_button_rect = pygame.Rect(((SCREEN_WIDTH / 16) * 5) - (button_width / 2), (SCREEN_HEIGHT / 2) - (button_height / 2), button_width, button_height)
 double_down_button_rect = pygame.Rect(((SCREEN_WIDTH / 16) * 7) - (button_width / 2), (SCREEN_HEIGHT / 2) - (button_height / 2), button_width, button_height)
@@ -220,12 +220,14 @@ while True:
             if blackjack_turn_ended:
                 # "Play Again" button
                 if event.type == pygame.MOUSEBUTTONDOWN: # Check if the button is clicked
-                    if ready_button_rect.collidepoint(event.pos):
+                    if play_again_button_rect.collidepoint(event.pos):
                         blackjack_reset()
+                # "Quit" button
+                if event.type == pygame.MOUSEBUTTONDOWN: # Check if the button is clicked
+                    if mid_game_quit_button_rect.collidepoint(event.pos):
+                        pygame.quit()
+                        sys.exit()
             
-
-            if playing_hidden: 
-                pass
 
 # Above is the button hit box / Below is the visuals
 
@@ -266,7 +268,10 @@ while True:
         
         if blackjack_turn_ended:
             # Play Again button
-            draw_button("Play Again", ready_button_rect, GRAY)
+            draw_button("Play Again", play_again_button_rect, GRAY)
+
+            # Unready button
+            draw_button("End", mid_game_quit_button_rect, GRAY)
 
 
         # displays the card image
@@ -300,9 +305,6 @@ while True:
         if blackjack_turn_ended:
             counter_text = font.render(blackjack_outcome, True, BLACK)
             screen.blit(counter_text, (SCREEN_WIDTH // 2 - counter_text.get_width() // 2, (SCREEN_HEIGHT / 8) * 3))
-    
-    if playing_hidden:
-        pass
     
 
     # Update the display
