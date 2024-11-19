@@ -15,6 +15,7 @@ class Deck:
         self.ranks: [str] = ['Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King']
         # Uses a list to create the deck
         self.deck = []  # makes a list
+        self.populate_deck()
 
     def populate_deck(self):
         """
@@ -40,5 +41,4 @@ class Deck:
 
 if __name__ == "__main__":
     player_hand = Deck()
-    player_hand.populate_deck()
     print(player_hand.deck)
