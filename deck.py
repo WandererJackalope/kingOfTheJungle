@@ -38,6 +38,16 @@ class Deck:
         self.deck.remove(card)  # removes card from deck
         return card  # returns the card to caller
 
+    def new_deck(self):
+        """
+        This method clears the deck and makes the deck full again.
+        :return: deck of cards
+        :rtype: list[str]
+        """
+        self.deck.clear()
+        self.populate_deck()
+        return self.deck
+
 
 if __name__ == "__main__":
     player_hand = Deck()
