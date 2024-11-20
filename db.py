@@ -56,7 +56,7 @@ class GameDB:
             'id': player_id
              }
             cur.execute(query, values)
-            self.conn.commit()  
+           
 
         
 
