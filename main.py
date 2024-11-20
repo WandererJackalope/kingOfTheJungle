@@ -132,9 +132,10 @@ def blackjack_reset(): # resets the blackjack game for another round
     global blackjack_turn_ended
     blackjack_turn_ended = False
 
-def load_and_display_image(file_path: str, image_position): # this func with load the image and display the image off the given file path and location
+def load_and_display_image(file_path: str, image_position: tuple, image_size: tuple): # this func with load the image and display the image off the given file path and location
     image = pygame.image.load(file_path)
-    screen.blit(image, image_position)
+    image_scalable = pygame.transform.scale(image, image_size)
+    screen.blit(image_scalable, image_position)
 
 
 # Screen dimensions
@@ -275,10 +276,7 @@ while True:
 
 
         # displays the card image
-        card = pygame.image.load("assets/Ace_of_Diamonds.png")
-        DEFAULT_IMAGE_SIZE = (107,150)
-        image = pygame.transform.scale(card, DEFAULT_IMAGE_SIZE)
-        screen.blit(image, (100,100))
+        load_and_display_image("assets/Ace_of_Diamonds.png", (100,100), (107, 150))
 
 
         # Displays a text that can change for "Player Hand"
