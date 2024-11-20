@@ -275,7 +275,10 @@ while True:
 
 
         # displays the card image
-        load_and_display_image('assets/Ace_of_Diamonds.png', (100,100)) # file path - position
+        card = pygame.image.load("assets/Ace_of_Diamonds.png")
+        DEFAULT_IMAGE_SIZE = (107,150)
+        image = pygame.transform.scale(card, DEFAULT_IMAGE_SIZE)
+        screen.blit(image, (100,100))
 
 
         # Displays a text that can change for "Player Hand"
