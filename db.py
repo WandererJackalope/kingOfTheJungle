@@ -1,5 +1,6 @@
 from dataclasses import dataclass
 import psycopg2
+import hashlib
 
 
 class InvalidLogin(Exception):
@@ -26,6 +27,25 @@ class GameDB:
         throws InvalidLogin when the login is incorrect
         returns an integer id of the user on successful validation
         """
+
+        with self.conn.cursor() as cur:
+            try:
+                login_query = " SELECT Password FROM Player WHERE PlayerNum = (SELECT PlayerNum FROM Player WHERE UserName = (%(name)s)) "
+                cur.execute(login_query, (name)) 
+            except: 
+                raise InvalidLogin #will catch missing username?
+            
+            pswd_check = cur.fetchone
+
+        if (pswd_check == password):
+            id_query = " SELECT PlayerNum FROM Player WHERE UserName = (%(name)s) "
+            cur.execute(id_query, (name))
+            
+            return (cur.fetchone)
+        
+        else:
+            raise InvalidLogin
+        
         pass
 
     def add_player_user(self, name: str, password: str, tokens: int = 1000):
@@ -33,6 +53,21 @@ class GameDB:
         hash the password with sha256 and store the name, hashed password, and token amount into the database
         does not return anything
         """
+  
+        hashPass = hashlib.sha256()
+        hashPass.update(password.encode())
+        hexPass = hashPass.hexdigest()
+
+        with self.conn.cursor() as cur: 
+            user_add = (
+                """ INSERT INTO Player(name, id, tokens) 
+                    VALUES (%(name)s, %(passwd)s, %(tkns)s) 
+                    ON CONFLICT (PlayerNum) DO NOTHING; """)
+            
+            cur.execute = (user_add, (name, hexPass, tokens)) #secure enough???
+
+            #add rollback in case of error?
+
         pass
 
     def log_game(self, player_id: int, won: bool, new_token_balance: int):
