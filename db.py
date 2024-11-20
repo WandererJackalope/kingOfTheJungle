@@ -24,55 +24,63 @@ class GameDB:
     def validate_player_login(self, name: str, password: str) -> int:
         """
         validates user name and password and returns the user id.
-        throws InvalidLogin when the login is incorrect
-        returns an integer id of the user on successful validation
+        :throws: InvalidLogin when the login is incorrect
+        :returns: an integer id of the user on successful validation
         """
 
         with self.conn.cursor() as cur:
             try:
-                cur.execute("SELECT password FROM Player WHERE name = (%(name)s) LIMIT 1", (name,)) 
-            except Exception as e: 
+                cur.execute("SELECT hashed_password FROM Player WHERE name = (%(name)s) LIMIT 1", (name,))
+            except Exception as e:
                 raise InvalidLogin() from e
-        
-            
-            pswd_check = cur.fetchone
+
+
+            pswd_check = cur.fetchone()
 
         if (pswd_check == password):
             id_query = "SELECT id FROM Player WHERE name = (%(name)s)"
             cur.execute(id_query, (name,))
-            
-            return int(cur.fetchone)
-        
+
+            return int(cur.fetchone())
+
         else:
             raise InvalidLogin
-        
-        pass
 
     def add_player_user(self, name: str, password: str, tokens: int = 1000):
         """
         hash the password with sha256 and store the name, hashed password, and token amount into the database
         does not return anything
         """
-  
+
         hashPass = hashlib.sha256()
         hashPass.update(password.encode())
         hexPass = hashPass.hexdigest()
 
-        with self.conn.cursor() as cur: 
+        with self.conn.cursor() as cur:
             cur.execute(
-                """INSERT INTO Player(name, hashed_password, tokens) 
+                """INSERT INTO Player(name, hashed_password, tokens)
                     VALUES (%(name)s, %(passwd)s, %(tkns)s)""",
                     (name, hexPass, tokens,))
-            
+
 
     def log_game(self, player_id: int, won: bool, new_token_balance: int):
         """
-        logs game results
-        Params:
-        won: bool: True if player won the game, False if they lost the game
-        new_token_count: the number of tokens we currently have
+        Logs game results and updates player statistics
+
+        Args:
+            player_id: int - The ID of the player
+            won: bool - True if player won the game, False if they lost
+            new_token_balance: int - The number of tokens the player now has
         """
-        pass
+
+        with self.conn.cursor() as cur:
+            colm = "win_count" if won else "loss_count"
+            query = f'UPDATE "Player" SET tokens = %(tokens)s, {colm} = {colm} + 1 WHERE id = %(id)s'
+            values = {
+            'tokens': new_token_balance,
+            'id': player_id
+             }
+            cur.execute(query, values)
 
     def get_player_info(self, player_id: int) -> Player:
         """
