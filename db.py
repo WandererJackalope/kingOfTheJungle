@@ -30,18 +30,18 @@ class GameDB:
 
         with self.conn.cursor() as cur:
             try:
-                login_query = " SELECT Password FROM Player WHERE PlayerNum = (SELECT PlayerNum FROM Player WHERE UserName = (%(name)s)) "
-                cur.execute(login_query, (name)) 
-            except: 
-                raise InvalidLogin #will catch missing username?
+                cur.execute("SELECT password FROM Player WHERE name = (%(name)s) LIMIT 1", (name,)) 
+            except Exception as e: 
+                raise InvalidLogin() from e
+        
             
             pswd_check = cur.fetchone
 
         if (pswd_check == password):
-            id_query = " SELECT PlayerNum FROM Player WHERE UserName = (%(name)s) "
-            cur.execute(id_query, (name))
+            id_query = "SELECT id FROM Player WHERE name = (%(name)s)"
+            cur.execute(id_query, (name,))
             
-            return (cur.fetchone)
+            return int(cur.fetchone)
         
         else:
             raise InvalidLogin
@@ -59,16 +59,11 @@ class GameDB:
         hexPass = hashPass.hexdigest()
 
         with self.conn.cursor() as cur: 
-            user_add = (
-                """ INSERT INTO Player(name, id, tokens) 
-                    VALUES (%(name)s, %(passwd)s, %(tkns)s) 
-                    ON CONFLICT (PlayerNum) DO NOTHING; """)
+            cur.execute(
+                """INSERT INTO Player(name, hashed_password, tokens) 
+                    VALUES (%(name)s, %(passwd)s, %(tkns)s)""",
+                    (name, hexPass, tokens,))
             
-            cur.execute = (user_add, (name, hexPass, tokens)) #secure enough???
-
-            #add rollback in case of error?
-
-        pass
 
     def log_game(self, player_id: int, won: bool, new_token_balance: int):
         """
