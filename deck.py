@@ -11,8 +11,8 @@ class Deck:
         This method initializes the deck of cards.
         """
         # Define the suits and ranks of the deck
-        self.suits: [str] = ['Hearts', 'Diamonds', 'Clubs', 'Spades']
-        self.ranks: [str] = ['Ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'Jack', 'Queen', 'King']
+        self.suits: [str] = ['hearts', 'diamonds', 'clubs', 'spades']
+        self.ranks: [str] = ['ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king']
         # Uses a list to create the deck
         self.deck = []  # makes a list
         self.populate_deck()
@@ -28,15 +28,18 @@ class Deck:
                 self.deck.append(str(y) + "_of_" + str(x))  # adds rank to suit... "2" + " of " + "Clubs" = "2_of_Clubs"
         return self.deck
 
-    def pull_card(self):
+    def pull_cards(self, num_of_cards = 1):
         """
         This method picks a card at random from the deck and draws a card.
         :return: card
         :rtype: str
         """
-        card = self.deck[random.randint(0, len(self.deck) - 1)]  # picks card at random
-        self.deck.remove(card)  # removes card from deck
-        return card  # returns the card to caller
+        drawn_cards = []
+        for i in range(num_of_cards):
+            card = self.deck[random.randint(0, len(self.deck) - 1)]  # picks card at random
+            self.deck.remove(card)  # removes card from deck
+            drawn_cards.append(card)  # adds the drawn card to the list
+        return drawn_cards  # returns the list of drawn cards
 
     def new_deck(self):
         """
