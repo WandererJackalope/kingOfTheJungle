@@ -15,7 +15,6 @@ class Deck:
         self.ranks: [str] = ['ace', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'jack', 'queen', 'king']
         # Uses a list to create the deck
         self.deck = []  # makes a list
-        self.populate_deck()
 
     def populate_deck(self):
         """
