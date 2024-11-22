@@ -1,7 +1,6 @@
 # This will be the main file of the python casino simulator that will allow you to play different games and work with money
 import sys
 from Blackjackclass import Blackjack_game
-import deck
 
 import pygame
 
