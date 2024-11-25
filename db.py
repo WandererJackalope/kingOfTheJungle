@@ -81,6 +81,8 @@ class GameDB:
             'id': player_id
              }
             cur.execute(query, values)
+            if cur.rowcount == 0:
+                        raise ValueError(f"No player found with ID {player_id}")
 
     def get_player_info(self, player_id: int) -> Player:
         """
