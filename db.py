@@ -20,7 +20,7 @@ class Player:
 class GameDB:
     def __init__(self, db_conn_uri: str):
         self.conn = psycopg2.connect(db_conn_uri)
-        print("db: ", self.conn.info.dbname)
+        # print("db: ", self.conn.info.dbname)
 
     def validate_player_login(self, name: str, password: str) -> int:
         """
@@ -40,9 +40,9 @@ class GameDB:
         
             
             dbres = cur.fetchone()
-            print("user supplied pw hashed:", hexPass)
-            print("db pw hashed", dbres[0])
-            print("do they equal?", hexPass == dbres[0])
+            # print("user supplied pw hashed:", hexPass)
+            # print("db pw hashed", dbres[0])
+            # print("do they equal?", hexPass == dbres[0])
 
             # check if passwords DO NOT match
             if dbres[0] != hexPass:
@@ -90,6 +90,7 @@ class GameDB:
             'id': player_id
              }
             cur.execute(query, values)
+            self.conn.commit()
             if cur.rowcount == 0:
                         raise ValueError(f"No player found with ID {player_id}")
 
