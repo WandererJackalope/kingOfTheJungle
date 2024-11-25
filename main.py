@@ -65,13 +65,11 @@ mid_game_quit_button = pygame.Rect(((SCREEN_WIDTH / 16) * 9) - (button_width / 2
 play_again_button = pygame.Rect(((SCREEN_WIDTH / 16) * 7) - (button_width / 2),
                                      ((SCREEN_HEIGHT / 16) * 10) - (button_height / 2), button_width, button_height)
 # Blackjack buttons - hit - double down - spilt - stay
-hit_button = pygame.Rect(((SCREEN_WIDTH / 16) * 5) - (button_width / 2), (SCREEN_HEIGHT / 2) - (button_height / 2),
+hit_button = pygame.Rect(((SCREEN_WIDTH / 16) * 6) - (button_width / 2), (SCREEN_HEIGHT / 2) - (button_height / 2),
                               button_width, button_height)
-double_down_button = pygame.Rect(((SCREEN_WIDTH / 16) * 7) - (button_width / 2),
+double_down_button = pygame.Rect(((SCREEN_WIDTH / 16) * 8) - (button_width / 2),
                                       (SCREEN_HEIGHT / 2) - (button_height / 2), button_width, button_height)
-split_button = pygame.Rect(((SCREEN_WIDTH / 16) * 9) - (button_width / 2),
-                                (SCREEN_HEIGHT / 2) - (button_height / 2), button_width, button_height)
-stay_button = pygame.Rect(((SCREEN_WIDTH / 16) * 11) - (button_width / 2),
+stay_button = pygame.Rect(((SCREEN_WIDTH / 16) * 10) - (button_width / 2),
                                (SCREEN_HEIGHT / 2) - (button_height / 2), button_width, button_height)
 # Blackjack bet buttons - raise - lower
 raise_button = pygame.Rect(((SCREEN_WIDTH / 16) * 2) - (button_width / 2),
@@ -103,8 +101,6 @@ while True:
                         blackjack.double_down()
                     if stay_button.collidepoint(event.pos):
                         blackjack.stay()
-                    if split_button.collidepoint(event.pos):
-                        blackjack.split()
                     
             if not blackjack.game_in_progress:
                 # "Raise" button
@@ -136,9 +132,6 @@ while True:
         # Double Down button
         draw_button("Double Down", double_down_button, GRAY)
 
-        # Spilt button
-        draw_button("Spilt", split_button, GRAY)
-
         # Stay button
         draw_button("Stay", stay_button, GRAY)
 
@@ -158,13 +151,17 @@ while True:
         # Displays a text that can change for "Player Hand"
 
         for index, card in enumerate(blackjack.player_hand):
-            card_image_name = f"assets/PNG-cards-1.3/{card}.png" 
+            card_image_name = f"assets/PNG-cards-1.3/{card}.png"
 
-            # Calculate the x position based on index to avoid overlapping cards
-            x_pos = SCREEN_WIDTH // 2 - 114 + index * 120  # Increase x position for each card to display them side by side
+            # Calculate the x position for the current card
+            # Shift cards dynamically based on the index and card width (108px per card)
+            x_pos = (SCREEN_WIDTH // 2 - len(blackjack.player_hand) * 54) + index * 108
             image_position = (x_pos, SCREEN_HEIGHT // 4 * 2.5)
             image_size = (108, 150)
-            load_and_display_image(card_image_name,image_position, image_size)
+
+            # Load and display the current card
+            load_and_display_image(card_image_name, image_position, image_size)
+
 
         for index, card in enumerate(blackjack.house_hand):
             if not blackjack.turn_ended and index == 0:
