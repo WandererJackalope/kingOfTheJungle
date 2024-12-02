@@ -7,11 +7,10 @@ import pygame
 pygame.init()
 
 # Variables
-current_game = None
+playing_blackjack = False
 player_hand = []
 house_hand = []
 player_bet = 5
-player_tokens = 100
 
 # Variables - Blackjack
 blackjack_turn_ended = False
@@ -83,16 +82,19 @@ while True:
         if event.type == pygame.QUIT:
             pygame.quit()
             sys.exit()
+        if event.type == pygame.VIDEORESIZE:
+            # Update the screen size when the window is resized
+            SCREEN_WIDTH, SCREEN_HEIGHT = event.w, event.h
+            screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE)
 
         if main_menu:  # check if they are on the main menu
             if event.type == pygame.MOUSEBUTTONDOWN:  # Check if the button is clicked
                 if blackjack_button.collidepoint(event.pos):
                     main_menu = False
                     blackjack = Blackjack_game()
-                    blackjack.start_game()
-                    current_game = "blackjack"
+                    playing_blackjack = True
 
-        if current_game == "blackjack":
+        if playing_blackjack:
             if blackjack.game_in_progress: # checks if they are playing blackjack
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if hit_button.collidepoint(event.pos):
@@ -106,9 +108,9 @@ while True:
                 # "Raise" button
                 if event.type == pygame.MOUSEBUTTONDOWN:  # Check if the button is clicked
                     if raise_button.collidepoint(event.pos):
-                        player_bet = min(player_bet + 5, player_tokens)
+                        blackjack.raise_bet(5)
                     if lower_button.collidepoint(event.pos):     # "Lower" button
-                        player_bet = max(player_bet - 5, 5)
+                        blackjack.lower_bet(5)
                     if play_button.collidepoint(event.pos):      # "Play" button
                         blackjack.start_game()
                         blackjack.game_in_progress = True
@@ -118,11 +120,15 @@ while True:
     if main_menu:  # check if they are on the main menu
         # Fill the screen with white
         screen.fill(WHITE)
+        bkg = pygame.image.load("assets/jungle.jpg")
+        bkg = pygame.transform.scale(bkg, (SCREEN_WIDTH, SCREEN_HEIGHT))
+
+        screen.blit(bkg, bkg.get_rect())
 
         # Draw the button
         draw_button("Blackjack", blackjack_button, GRAY)
 
-    if current_game == "blackjack":  # checks if they are playing blackjack
+    if playing_blackjack:  # checks if they are playing blackjack
         # Fill the screen with green
         screen.fill(CASINO_GREEN)
 
@@ -168,6 +174,7 @@ while True:
                 card_image_name = "assets/PNG-cards-1.3/back_of_card.png"
             else:
                 card_image_name = f"assets/PNG-cards-1.3/{card}.png"
+
             x_pos = SCREEN_WIDTH // 2 - 114 + index * 120 
             image_position = (x_pos, SCREEN_HEIGHT // 4 * 0.5)
             image_size = (108, 150)
@@ -180,12 +187,12 @@ while True:
         screen.blit(counter_text, (SCREEN_WIDTH // 2 - counter_text.get_width() // 2, (SCREEN_HEIGHT / 8) * 7))
 
         # Displays a text that can change for "Player's Bet"
-        counter_text = font.render(f"Your Bet: {player_bet}", True, BLACK)
+        counter_text = font.render(f"Your Bet: {blackjack.player_bet}", True, BLACK)
         screen.blit(counter_text, (
             ((SCREEN_WIDTH / 16) * 2) - (button_width / 2), (SCREEN_HEIGHT / 2) - (counter_text.get_height() // 2)))
 
         # Displays a text that can change for "Player's Coins"
-        counter_text = font.render(f"Your Coins: {player_tokens}", True, BLACK)
+        counter_text = font.render(f"Your Coins: {blackjack.player_tokens}", True, BLACK)
         screen.blit(counter_text, (
             ((SCREEN_WIDTH / 16) * 14) - (button_width / 2), (SCREEN_HEIGHT / 2) - (counter_text.get_height() // 2)))
 
