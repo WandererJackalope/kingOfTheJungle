@@ -10,13 +10,9 @@ pygame.init()
 
 # Variables
 playing_blackjack = False
-player_hand = []
-house_hand = []
-player_bet = 5
 
 # Variables - Blackjack
 blackjack_turn_ended = False
-blackjack_outcome = " "
 
 # Constants
 WHITE = (255, 255, 255)
@@ -198,7 +194,6 @@ while True:
         screen.blit(counter_text, (SCREEN_WIDTH // 2 - counter_text.get_width() // 2, (SCREEN_HEIGHT / 8) * 7))
 
         # Displays a text that can change for "Player's Bet"
-        counter_text = font.render(f"Your Bet: {blackjack.player_bet}", True, BLACK)
         counter_text = font.render(f"Your Bet: {blackjack.player_bet}", True, BLACK)
         screen.blit(counter_text, (
             ((SCREEN_WIDTH / 16) * 2) - (button_width / 2), (SCREEN_HEIGHT / 2) - (counter_text.get_height() // 2)))
