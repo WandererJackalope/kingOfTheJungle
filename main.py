@@ -2,17 +2,15 @@
 import sys
 
 import pygame
-import db
 
+import Account
 from Blackjack import Blackjack
 
 pygame.init()
 
 # Variables
 playing_blackjack = False
-
-# Variables - Blackjack
-blackjack_turn_ended = False
+account: Account.Account = Account.Account()
 
 # Constants
 WHITE = (255, 255, 255)
@@ -24,17 +22,20 @@ SCREEN_WIDTH, SCREEN_HEIGHT = 1280, 720
 # Games
 main_menu = True
 
+
 def draw_button(text, rect, color):  # Draws a button with text on the screen.
     pygame.draw.rect(screen, color, rect)
     text_surface = font.render(text, True, BLACK)
     text_rect = text_surface.get_rect(center=rect.center)
     screen.blit(text_surface, text_rect)
 
+
 def load_and_display_image(file_path: str, image_position: tuple, image_size: tuple):
     image = pygame.image.load(file_path)
     image = pygame.transform.scale(image, image_size)
     screen = pygame.display.get_surface()
     screen.blit(image, image_position)
+
 
 # Screen dimensions
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE, pygame.RESIZABLE)
@@ -84,11 +85,11 @@ while True:
             if event.type == pygame.MOUSEBUTTONDOWN:  # Check if the button is clicked
                 if blackjack_button.collidepoint(event.pos):
                     main_menu = False
-                    blackjack = Blackjack()
+                    blackjack = Blackjack(account)
                     playing_blackjack = True
 
         if playing_blackjack:
-            if blackjack.game_in_progress: # checks if they are playing blackjack
+            if blackjack.game_in_progress:  # checks if they are playing blackjack
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if hit_button.collidepoint(event.pos):
                         blackjack.add_to_hand(blackjack.player_hand)
@@ -100,11 +101,10 @@ while True:
                 if event.type == pygame.MOUSEBUTTONDOWN:  # Check if the button is clicked
                     if raise_button.collidepoint(event.pos):
                         blackjack.raise_bet(5)
-                    if lower_button.collidepoint(event.pos):     # "Lower" button
+                    if lower_button.collidepoint(event.pos):  # "Lower" button
                         blackjack.lower_bet(5)
-                    if play_button.collidepoint(event.pos):      # "Play" button
+                    if play_button.collidepoint(event.pos):  # "Play" button
                         blackjack.start_game()
-                        blackjack.game_in_progress = True
             else:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if raise_button.collidepoint(event.pos):
@@ -117,6 +117,7 @@ while True:
                     if mid_game_quit_button.collidepoint(event.pos):
                         playing_blackjack = False
                         main_menu = True
+                        del blackjack
 
     # Above is the button hit box / Below is the visuals
 
@@ -183,7 +184,7 @@ while True:
             else:
                 card_image_name = f"assets/PNG-cards-1.3/{card}.png"
 
-            x_pos = SCREEN_WIDTH // 2 - 114 + index * 120 
+            x_pos = SCREEN_WIDTH // 2 - 114 + index * 120
             image_position = (x_pos, SCREEN_HEIGHT // 4 * 0.5)
             image_size = (108, 150)
             load_and_display_image(card_image_name, image_position, image_size)
@@ -198,7 +199,7 @@ while True:
             ((SCREEN_WIDTH / 16) * 2) - (button_width / 2), (SCREEN_HEIGHT / 2) - (counter_text.get_height() // 2)))
 
         # Displays a text that can change for "Player's Coins"
-        counter_text = font.render(f"Your Coins: {blackjack.player_tokens}", True, BLACK)
+        counter_text = font.render(f"Your Coins: {account.player.tokens}", True, BLACK)
         screen.blit(counter_text, (
             ((SCREEN_WIDTH / 16) * 14) - (button_width / 2), (SCREEN_HEIGHT / 2) - (counter_text.get_height() // 2)))
 
