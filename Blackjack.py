@@ -1,7 +1,5 @@
 import Account
 import Deck
-from main import account
-
 
 class Blackjack:
     """
@@ -13,6 +11,8 @@ class Blackjack:
         This method initializes the Blackjack class.
         :param account: Player account
         """
+        from main import account
+
         self.player: account.player = account.player
         self.player_bet: int = 5
 
@@ -83,18 +83,23 @@ class Blackjack:
         This method adds a card to the hand and updates the hand value.
         :param hand: The hand to add a card to.
         """
+        if self.turn_ended:  # Prevent any actions after the turn ends
+            return
+        
         hand += self.current_deck.pull_cards()  # Add 1 card to the passed hand
         # Update the hand value for the specific hand passed
         if hand == self.player_hand:
             self.player_hand_value = self.update_hand_value(hand)
-        elif hand == self.house_hand:
-            self.house_hand_value = self.update_hand_value(hand)
-
             # Check if the player busts
             if self.player_hand_value > 21:
                 self.player_bust = True
                 self.turn_ended = True
                 self.reset_game()
+            elif self.player_hand_value == 21:
+                self.turn_ended = True  # Automatically end turn if 21
+                self.house_play()
+        elif hand == self.house_hand:
+            self.house_hand_value = self.update_hand_value(hand)
 
     def house_play(self) -> None:
         """
@@ -110,7 +115,7 @@ class Blackjack:
         This method ends the player's turn and starts the house's turn.
         """
         if self.player_hand_value != 21:
-            self.turn_ended = True
+            self.turn_ended = True  # Mark turn as ended
             self.house_play()
 
     def double_down(self):
