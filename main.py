@@ -165,7 +165,6 @@ while True:
         load_and_display_image('assets/PNG-cards-1.3/back_of_card.png', (100, 100), (108, 150))  # file path - position
 
         # Displays a text that can change for "Player Hand"
-
         for index, card in enumerate(blackjack.player_hand):
             card_image_name = f"assets/PNG-cards-1.3/{card}.png"
 
