@@ -11,7 +11,7 @@ class Account:
         """
         self.player: db.Player = db.Player(-1, "Player", 1000, 0, 0)
         self.logged_in: bool = False
-        db_uri: str = ""  # TODO: Add your database URI here as a string
+        self.db_uri: str = ""  # TODO: Add your database URI here as a string
 
     def login(self, name: str, password: str) -> db.Player:
         """
@@ -30,3 +30,15 @@ class Account:
         :return: the newly created Player object
         """
         pass
+
+    def update_player_stats(self, won: bool) -> None:
+        """
+        This method logs the game results and new token balance.
+        :param won: True if the player won the game, False if they lost
+        :return:
+        """
+        game_db: db.GameDB = db.GameDB(self.db_uri)
+        try:
+            game_db.log_game(self.player.id, won, self.player.tokens)
+        except Exception as e:
+            print(e)
