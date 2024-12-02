@@ -4,7 +4,7 @@ import sys
 import pygame
 import db
 
-from Blackjackclass import Blackjack_game
+from Blackjack import Blackjack
 
 pygame.init()
 
@@ -80,9 +80,9 @@ while True:
                 if blackjack_button.collidepoint(event.pos):
                     main_menu = False
                     if player.id != -1:
-                        blackjack = Blackjack_game(player, game_db)
+                        blackjack = Blackjack(player, game_db)
                     else:
-                        blackjack = Blackjack_game(player)
+                        blackjack = Blackjack(player)
                     current_game = "blackjack"
 
         if current_game == "blackjack":
@@ -106,9 +106,9 @@ while True:
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if play_again_button.collidepoint(event.pos):
                         if player.id != -1:
-                            blackjack = Blackjack_game(player, game_db)
+                            blackjack = Blackjack(player, game_db)
                         else:
-                            blackjack = Blackjack_game(player)
+                            blackjack = Blackjack(player)
                     if mid_game_quit_button.collidepoint(event.pos):
                         main_menu = True
                         current_game = ""

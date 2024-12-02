@@ -1,8 +1,8 @@
-import deck
+import Deck
 import db
 
 
-class Blackjack_game:
+class Blackjack:
 
     def __init__(self, player: db.Player, game_db: db.GameDB = None):
         # Initialize session variables here
@@ -15,7 +15,7 @@ class Blackjack_game:
         self.outcome = " "
 
         # Set up the deck and hands
-        self.current_deck = deck.Deck()
+        self.current_deck = Deck.Deck()
         self.current_deck.populate_deck()  # Ensure the deck is populated
 
         self.player_hand = self.current_deck.pull_cards(2)
