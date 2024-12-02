@@ -27,7 +27,7 @@ class Deck:
                 self.deck.append(str(y) + "_of_" + str(x))  # adds rank to suit... "2" + " of " + "Clubs" = "2_of_Clubs"
         return self.deck
 
-    def pull_cards(self, num_of_cards = 1):
+    def pull_cards(self, num_of_cards=1):
         """
         This method picks a card at random from the deck and draws a card.
         :return: card
