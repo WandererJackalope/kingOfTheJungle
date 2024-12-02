@@ -132,8 +132,7 @@ class Blackjack:
 
     def reset_game(self):
         self.check_game_outcome()
-        if self.outcome:
-            self.adjust_player_tokens()
+        self.adjust_player_tokens()
 
         if self.player_bet > self.player_tokens:
             self.player_bet = self.player_tokens
