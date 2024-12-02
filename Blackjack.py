@@ -1,6 +1,6 @@
-import deck
+import Deck
 
-class Blackjack_game:
+class Blackjack:
 
     def __init__(self):
         self.player_tokens = 101
@@ -11,6 +11,7 @@ class Blackjack_game:
 
         # Game state
         self.game_in_progress = False
+        self.turn_ended = None
 
         # Round-specific variables initialized with default values
         self.player_hand = []
@@ -26,7 +27,7 @@ class Blackjack_game:
         self.outcome = None
         
 # Sets up the deck
-        self.current_deck = deck.Deck()
+        self.current_deck = Deck.Deck()
         self.current_deck.populate_deck()  # Ensure the deck is populated
 # Player Hands
         self.player_hand = self.current_deck.pull_cards(2)

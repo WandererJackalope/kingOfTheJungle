@@ -88,7 +88,7 @@ while True:
             if event.type == pygame.MOUSEBUTTONDOWN:  # Check if the button is clicked
                 if blackjack_button.collidepoint(event.pos):
                     main_menu = False
-                    blackjack = Blackjack_game()
+                    blackjack = Blackjack()
                     playing_blackjack = True
 
         if playing_blackjack:
@@ -100,7 +100,7 @@ while True:
                         blackjack.double_down()
                     if stay_button.collidepoint(event.pos):
                         blackjack.stay()
-            elif not blackjack.in_progress and not blackjack.turn_ended:
+            elif not blackjack.game_in_progress and not blackjack.turn_ended:
                 if event.type == pygame.MOUSEBUTTONDOWN:  # Check if the button is clicked
                     if raise_button.collidepoint(event.pos):
                         blackjack.raise_bet(5)
@@ -136,14 +136,14 @@ while True:
         # Stay button
         draw_button("Stay", stay_button, GRAY)
 
-        if not blackjack.in_progress and not blackjack.turn_ended:
+        if not blackjack.game_in_progress and not blackjack.turn_ended:
             # Raise button
             draw_button("Raise", raise_button, GRAY)
             # Lower button
             draw_button("Lower", lower_button, GRAY)
             # Ready button
             draw_button("Play", play_button, GRAY)
-        elif blackjack.in_progress:
+        elif blackjack.game_in_progress:
             # Quit button
             draw_button("Quit", mid_game_quit_button, GRAY)
         else:
