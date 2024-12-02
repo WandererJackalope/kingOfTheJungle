@@ -153,7 +153,7 @@ while True:
 
         screen.blit(bkg, bkg.get_rect())
         
-        header_img = pygame.image.load("C:/Users/bigtu/OneDrive/Desktop/Folders/kingOfTheJungle/assets/headertext.png")
+        header_img = pygame.image.load("assets/headertext.png")
         header_img = pygame.transform.scale(header_img, (SCREEN_HEIGHT, SCREEN_WIDTH))
 
         # Get the width and height of the image
