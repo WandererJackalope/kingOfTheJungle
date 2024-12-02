@@ -17,8 +17,7 @@ class Blackjack:
         self.player_hand = []
         self.house_hand = []
         self.deck = []
-        
-        
+
     def start_game(self):
         # Initialize session variables here
         self.game_in_progress = True
@@ -26,18 +25,22 @@ class Blackjack:
         self.turn_ended = False
         self.outcome = None
         
-# Sets up the deck
+        # Sets up the deck
         self.current_deck = Deck.Deck()
         self.current_deck.populate_deck()  # Ensure the deck is populated
-# Player Hands
+        
+        # Player Hands
         self.player_hand = self.current_deck.pull_cards(2)
         self.player_hand_value = self.update_hand_value(self.player_hand)
-        self.player_hand_2 = None
-# House Hands
+        
+        # House Hands
         self.house_hand = self.current_deck.pull_cards(2)
         self.house_hand_value = self.update_hand_value(self.house_hand)
 
-    
+        if self.player_hand_value == 21:
+            self.turn_ended = True  # Automatically end the player's turn if they have 21
+            self.house_play()  # Let the house play immediately
+
     def update_hand_value(self, hand):
         hand_value = 0
         aces_in_hand = 0
@@ -61,33 +64,40 @@ class Blackjack:
         return hand_value
 
     def add_to_hand(self, hand):
-        hand += self.current_deck.pull_cards()  # Add 1 card to the passed hand
-        # Update the hand value for the specific hand passed
-        if hand == self.player_hand:
-            self.player_hand_value = self.update_hand_value(hand)
-        elif hand == self.house_hand:
-            self.house_hand_value = self.update_hand_value(hand)
+        # If the game is over (turn_ended) or the player already has 21, they cannot hit
+        if not self.turn_ended and self.player_hand_value < 21:
+            hand += self.current_deck.pull_cards()  # Add 1 card to the passed hand
+            
+            # Update the hand value for the specific hand passed
+            if hand == self.player_hand:
+                self.player_hand_value = self.update_hand_value(hand)
+            elif hand == self.house_hand:
+                self.house_hand_value = self.update_hand_value(hand)
 
-        if self.player_hand_value > 21:
-            self.player_bust = True
-            self.turn_ended = True
-            self.reset_game()
+            # Check if the player busts
+            if self.player_hand_value > 21:
+                self.player_bust = True
+                self.turn_ended = True
+                self.reset_game()
 
     def house_play(self):
+        self.turn_ended = True
         while self.house_hand_value < 17:
             self.house_hand += self.current_deck.pull_cards()
             self.house_hand_value = self.update_hand_value(self.house_hand)
         self.reset_game()
 
     def stay(self):
-        self.turn_ended = True
-        self.house_play()
-    
-    def double_down(self):
-        self.turn_ended = True
-        self.add_to_hand(self.player_hand)
-        self.house_play()
+        if self.player_hand_value != 21:  # Ensure player can only stay if they haven't hit 21 yet
+            self.turn_ended = True
+            self.house_play()
 
+    def double_down(self):
+        # Double Down should be disabled if the player already has 21
+        if self.player_hand_value != 21:
+            self.turn_ended = True
+            self.add_to_hand(self.player_hand)
+            self.house_play()
 
     def check_game_outcome(self):
         # Loss conditions
@@ -105,7 +115,6 @@ class Blackjack:
         elif self.player_hand_value > self.house_hand_value:
             self.outcome = "Win"
 
-
     def raise_bet(self, amount):
         new_bet = self.player_bet + amount
         if new_bet < self.player_tokens:
@@ -120,7 +129,6 @@ class Blackjack:
         else:
             self.player_bet = new_bet
 
-
     def adjust_player_tokens(self):
         if self.outcome == "Loss":
             self.player_tokens -= self.player_bet
@@ -128,7 +136,6 @@ class Blackjack:
             self.player_tokens += self.player_bet
         elif self.outcome == "Blackjack Win":
             self.player_tokens += self.player_bet * 1.5
-
 
     def reset_game(self):
         self.check_game_outcome()
@@ -138,5 +145,3 @@ class Blackjack:
         if self.player_bet > self.player_tokens:
             self.player_bet = self.player_tokens
         self.game_in_progress = False
-    
-
