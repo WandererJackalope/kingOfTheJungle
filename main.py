@@ -1,21 +1,17 @@
 # This will be the main file of the python casino simulator that will allow you to play different games and work with money
 import sys
-from Blackjackclass import Blackjack_game
 
 import pygame
+import db
+
+from Blackjackclass import Blackjack_game
 
 pygame.init()
 
 # Variables
 current_game = None
-player_hand = []
-house_hand = []
-player_bet = 5
-player_tokens = 100
-
-# Variables - Blackjack
-blackjack_turn_ended = False
-blackjack_outcome = " "
+player = db.Player(-1, "Player", 1000, 0, 0)
+game_db = None # Replace with your DB connection URI
 
 # Constants
 WHITE = (255, 255, 255)
@@ -26,8 +22,6 @@ SCREEN_WIDTH, SCREEN_HEIGHT = 1280, 720
 
 # Games
 main_menu = True
-#playing_blackjack = False
-
 
 def draw_button(text, rect, color):  # Draws a button with text on the screen.
     pygame.draw.rect(screen, color, rect)
@@ -41,12 +35,9 @@ def load_and_display_image(file_path: str, image_position: tuple, image_size: tu
     screen = pygame.display.get_surface()
     screen.blit(image, image_position)
 
-
-
-
 # Screen dimensions
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE, pygame.RESIZABLE)
-pygame.display.set_caption("Casino_Sim")
+pygame.display.set_caption("Casino Sim")
 
 # Font
 font = pygame.font.Font(None, 32)
@@ -57,25 +48,25 @@ button_height = (SCREEN_HEIGHT / 100) * 5
 
 # Button properties - position (0,0) is top left corner - Position (x,y) - size (x,y) of the button
 blackjack_button = pygame.Rect((SCREEN_WIDTH / 2) - (button_width / 2), (SCREEN_HEIGHT / 3) - (button_height / 2),
-                                    button_width, button_height)
+                               button_width, button_height)
 play_button = pygame.Rect((SCREEN_WIDTH / 2) - (button_width / 2),
-                                ((SCREEN_HEIGHT / 16) * 10) - (button_height / 2), button_width, button_height)
+                          ((SCREEN_HEIGHT / 16) * 10) - (button_height / 2), button_width, button_height)
 mid_game_quit_button = pygame.Rect(((SCREEN_WIDTH / 16) * 9) - (button_width / 2),
-                                        ((SCREEN_HEIGHT / 16) * 10) - (button_height / 2), button_width, button_height)
+                                   ((SCREEN_HEIGHT / 16) * 10) - (button_height / 2), button_width, button_height)
 play_again_button = pygame.Rect(((SCREEN_WIDTH / 16) * 7) - (button_width / 2),
-                                     ((SCREEN_HEIGHT / 16) * 10) - (button_height / 2), button_width, button_height)
+                                ((SCREEN_HEIGHT / 16) * 10) - (button_height / 2), button_width, button_height)
 # Blackjack buttons - hit - double down - spilt - stay
 hit_button = pygame.Rect(((SCREEN_WIDTH / 16) * 6) - (button_width / 2), (SCREEN_HEIGHT / 2) - (button_height / 2),
-                              button_width, button_height)
+                         button_width, button_height)
 double_down_button = pygame.Rect(((SCREEN_WIDTH / 16) * 8) - (button_width / 2),
-                                      (SCREEN_HEIGHT / 2) - (button_height / 2), button_width, button_height)
+                                 (SCREEN_HEIGHT / 2) - (button_height / 2), button_width, button_height)
 stay_button = pygame.Rect(((SCREEN_WIDTH / 16) * 10) - (button_width / 2),
-                               (SCREEN_HEIGHT / 2) - (button_height / 2), button_width, button_height)
+                          (SCREEN_HEIGHT / 2) - (button_height / 2), button_width, button_height)
 # Blackjack bet buttons - raise - lower
 raise_button = pygame.Rect(((SCREEN_WIDTH / 16) * 2) - (button_width / 2),
-                                ((SCREEN_HEIGHT / 16) * 7) - (button_height / 2), button_width, button_height)
+                           ((SCREEN_HEIGHT / 16) * 7) - (button_height / 2), button_width, button_height)
 lower_button = pygame.Rect(((SCREEN_WIDTH / 16) * 2) - (button_width / 2),
-                                ((SCREEN_HEIGHT / 16) * 9) - (button_height / 2), button_width, button_height)
+                           ((SCREEN_HEIGHT / 16) * 9) - (button_height / 2), button_width, button_height)
 
 # Main loop
 while True:
@@ -88,12 +79,14 @@ while True:
             if event.type == pygame.MOUSEBUTTONDOWN:  # Check if the button is clicked
                 if blackjack_button.collidepoint(event.pos):
                     main_menu = False
-                    blackjack = Blackjack_game()
-                    blackjack.start_game()
+                    if player.id != -1:
+                        blackjack = Blackjack_game(player, game_db)
+                    else:
+                        blackjack = Blackjack_game(player)
                     current_game = "blackjack"
 
         if current_game == "blackjack":
-            if blackjack.game_in_progress: # checks if they are playing blackjack
+            if blackjack.in_progress:  # checks if they are playing blackjack
                 if event.type == pygame.MOUSEBUTTONDOWN:
                     if hit_button.collidepoint(event.pos):
                         blackjack.add_to_hand(blackjack.player_hand)
@@ -101,17 +94,24 @@ while True:
                         blackjack.double_down()
                     if stay_button.collidepoint(event.pos):
                         blackjack.stay()
-                    
-            if not blackjack.game_in_progress:
-                # "Raise" button
+            elif not blackjack.in_progress and not blackjack.turn_ended:
                 if event.type == pygame.MOUSEBUTTONDOWN:  # Check if the button is clicked
-                    if raise_button.collidepoint(event.pos):
-                        player_bet = min(player_bet + 5, player_tokens)
-                    if lower_button.collidepoint(event.pos):     # "Lower" button
-                        player_bet = max(player_bet - 5, 5)
-                    if play_button.collidepoint(event.pos):      # "Play" button
-                        blackjack.start_game()
-                        blackjack.game_in_progress = True
+                    if raise_button.collidepoint(event.pos): # "Raise" button
+                        blackjack.raise_bet()
+                    if lower_button.collidepoint(event.pos):  # "Lower" button
+                        blackjack.lower_bet()
+                    if play_button.collidepoint(event.pos):  # "Play" button
+                        blackjack.in_progress = True
+            else:
+                if event.type == pygame.MOUSEBUTTONDOWN:
+                    if play_again_button.collidepoint(event.pos):
+                        if player.id != -1:
+                            blackjack = Blackjack_game(player, game_db)
+                        else:
+                            blackjack = Blackjack_game(player)
+                    if mid_game_quit_button.collidepoint(event.pos):
+                        main_menu = True
+                        current_game = ""
 
     # Above is the button hit box / Below is the visuals
 
@@ -135,15 +135,21 @@ while True:
         # Stay button
         draw_button("Stay", stay_button, GRAY)
 
-        if blackjack.game_in_progress == False:
+        if not blackjack.in_progress and not blackjack.turn_ended:
             # Raise button
             draw_button("Raise", raise_button, GRAY)
             # Lower button
             draw_button("Lower", lower_button, GRAY)
-
             # Ready button
             draw_button("Play", play_button, GRAY)
-
+        elif blackjack.in_progress:
+            # Quit button
+            draw_button("Quit", mid_game_quit_button, GRAY)
+        else:
+            # Play again button
+            draw_button("Play Again", play_again_button, GRAY)
+            # Quit button
+            draw_button("Quit", mid_game_quit_button, GRAY)
 
         # displays the card image
         load_and_display_image('assets/PNG-cards-1.3/back_of_card.png', (100, 100), (108, 150))  # file path - position
@@ -162,39 +168,35 @@ while True:
             # Load and display the current card
             load_and_display_image(card_image_name, image_position, image_size)
 
-
         for index, card in enumerate(blackjack.house_hand):
             if not blackjack.turn_ended and index == 0:
                 card_image_name = "assets/PNG-cards-1.3/back_of_card.png"
             else:
                 card_image_name = f"assets/PNG-cards-1.3/{card}.png"
-            x_pos = SCREEN_WIDTH // 2 - 114 + index * 120 
+            x_pos = SCREEN_WIDTH // 2 - 114 + index * 120
             image_position = (x_pos, SCREEN_HEIGHT // 4 * 0.5)
             image_size = (108, 150)
             load_and_display_image(card_image_name, image_position, image_size)
-
-
 
         # Displays a text that can change for "Player Value"
         counter_text = font.render(f"Your Hand: {blackjack.update_hand_value(blackjack.player_hand)}", True, BLACK)
         screen.blit(counter_text, (SCREEN_WIDTH // 2 - counter_text.get_width() // 2, (SCREEN_HEIGHT / 8) * 7))
 
         # Displays a text that can change for "Player's Bet"
-        counter_text = font.render(f"Your Bet: {player_bet}", True, BLACK)
+        counter_text = font.render(f"Your Bet: {blackjack.player_bet}", True, BLACK)
         screen.blit(counter_text, (
             ((SCREEN_WIDTH / 16) * 2) - (button_width / 2), (SCREEN_HEIGHT / 2) - (counter_text.get_height() // 2)))
 
         # Displays a text that can change for "Player's Coins"
-        counter_text = font.render(f"Your Coins: {player_tokens}", True, BLACK)
+        counter_text = font.render(f"Your Coins: {player.tokens}", True, BLACK)
         screen.blit(counter_text, (
             ((SCREEN_WIDTH / 16) * 14) - (button_width / 2), (SCREEN_HEIGHT / 2) - (counter_text.get_height() // 2)))
 
         # Displays a text that can change for "House Hand"
-        
 
         # Displays a text for the outcome of the game
-        if blackjack_turn_ended:
-            counter_text = font.render(blackjack_outcome, True, BLACK)
+        if blackjack.turn_ended:
+            counter_text = font.render(blackjack.outcome, True, BLACK)
             screen.blit(counter_text, (SCREEN_WIDTH // 2 - counter_text.get_width() // 2, (SCREEN_HEIGHT / 8) * 3))
 
     # Update the display

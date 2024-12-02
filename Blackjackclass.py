@@ -1,17 +1,19 @@
 import deck
+import db
+
 
 class Blackjack_game:
 
-    def __init__(self):
-        pass
-        
-        
-    def start_game(self):
+    def __init__(self, player: db.Player, game_db: db.GameDB = None):
         # Initialize session variables here
-        self.game_in_progress = True
+        self.in_progress = False
         self.turn_ended = False
         self.player_bust = False
-        
+        self.player = player
+        self.game_db = game_db
+        self.player_bet = 5
+        self.outcome = " "
+
         # Set up the deck and hands
         self.current_deck = deck.Deck()
         self.current_deck.populate_deck()  # Ensure the deck is populated
@@ -26,7 +28,7 @@ class Blackjack_game:
     def update_hand_value(self, hand):
         hand_value = 0
         aces_in_hand = 0
-    
+
         for card in hand:
             if card[0] in ["j", "q", "k"]:
                 hand_value += 10
@@ -35,7 +37,7 @@ class Blackjack_game:
                 aces_in_hand += 1
             elif card[0] == "1" and card[1] == "0":  # for the card "10"
                 hand_value += 10
-            else: 
+            else:
                 hand_value += int(card[0])
 
         # Adjust for aces if the total value exceeds 21
@@ -56,18 +58,18 @@ class Blackjack_game:
         if self.player_hand_value > 21:
             self.player_bust = True
             self.turn_ended = True
-            self.reset_game()
+            self.reset_game(self.player, self.game_db)
 
     def house_play(self):
         while self.house_hand_value < 17:
             self.house_hand += self.current_deck.pull_cards()
             self.house_hand_value = self.update_hand_value(self.house_hand)
-        self.reset_game()
+        self.reset_game(self.player, self.game_db)
 
     def stay(self):
         self.turn_ended = True
         self.house_play()
-    
+
     def double_down(self):
         self.turn_ended = True
         self.house_play()
@@ -75,13 +77,28 @@ class Blackjack_game:
     def split(self):
         pass
 
+    def raise_bet(self):
+        self.player_bet += 5
 
-    def reset_game(self):
+    def lower_bet(self):
+        if self.player_bet > 0:
+            self.player_bet -= 5
+
+    def reset_game(self, player: db.Player, game_db: db.GameDB):
         if self.player_bust:
-            print("You Busted!")
+            self.outcome = "You Busted!"
+            player.tokens -= self.player_bet
+            won = False
         elif self.player_hand_value > self.house_hand_value:
-            print("You Win!")
+            self.outcome = "You Win!"
+            player.tokens += self.player_bet
+            won = True
         else:
-            print("Dealer Wins!")
-        self.game_in_progress = False
-
+            self.outcome = "Dealer Wins!"
+            player.tokens -= self.player_bet
+            won = False
+        if player.id != -1:
+            game_db.log_game(player.id, won, player.tokens)
+        print(self.outcome)
+        self.in_progress = False
+        return self.outcome
