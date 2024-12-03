@@ -2,6 +2,7 @@ from dataclasses import dataclass
 import psycopg2
 import hashlib
 import os
+from base64 import b64encode
 
 
 class InvalidLogin(Exception):
@@ -39,8 +40,8 @@ class GameDB:
             dbres = cur.fetchone()
 
             hashPass = hashlib.sha256()
-            hashPass.update(password.encode() + dbres[2])
-            hexPass = hashPass.hexdigest()
+            hashPass.update(password.encode())
+            hexPass = hashPass.hexdigest() + dbres[2]
 
             # check if passwords DO NOT match
             if dbres[0] != hexPass:
@@ -55,13 +56,15 @@ class GameDB:
         does not return anything
         """
         salt = os.urandom(16)
+        strSalt = b64encode(salt).decode('utf-8')
         hashPass = hashlib.sha256()
-        hashPass.update(password.encode() + salt)
-        hexPass = hashPass.hexdigest()
+        hashPass.update(password.encode())
+        hexPass = hashPass.hexdigest() + strSalt
+        print(strSalt)
 
         with self.conn.cursor() as cur: 
             res = cur.execute('INSERT INTO "Player"(name, hashed_password, tokens, salt) VALUES (%s, %s, %s, %s)',
-                    (name, hexPass, tokens, salt,))
+                    (name, hexPass, tokens, strSalt,))
             self.conn.commit()
             
 
