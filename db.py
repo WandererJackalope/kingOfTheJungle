@@ -1,6 +1,7 @@
 from dataclasses import dataclass
 import psycopg2
 import hashlib
+import os
 
 
 class InvalidLogin(Exception):
@@ -28,21 +29,18 @@ class GameDB:
         :throws: InvalidLogin when the login is incorrect
         :returns: an integer id of the user on successful validation
         """
-        hashPass = hashlib.sha256()
-        hashPass.update(password.encode())
-        hexPass = hashPass.hexdigest()
 
         with self.conn.cursor() as cur:
             try:
-                cur.execute('SELECT hashed_password, id FROM "Player" WHERE name = %s LIMIT 1', (name,)) 
+                cur.execute('SELECT hashed_password, id, salt FROM "Player" WHERE name = %s LIMIT 1', (name,)) 
             except Exception as e: 
                 raise InvalidLogin() from e
         
-            
             dbres = cur.fetchone()
-            # print("user supplied pw hashed:", hexPass)
-            # print("db pw hashed", dbres[0])
-            # print("do they equal?", hexPass == dbres[0])
+
+            hashPass = hashlib.sha256()
+            hashPass.update(password.encode() + dbres[2])
+            hexPass = hashPass.hexdigest()
 
             # check if passwords DO NOT match
             if dbres[0] != hexPass:
@@ -56,21 +54,16 @@ class GameDB:
         hash the password with sha256 and store the name, hashed password, and token amount into the database
         does not return anything
         """
-
+        salt = os.urandom(16)
         hashPass = hashlib.sha256()
-        hashPass.update(password.encode())
+        hashPass.update(password.encode() + salt)
         hexPass = hashPass.hexdigest()
 
         with self.conn.cursor() as cur: 
-            res = cur.execute('INSERT INTO "Player"(name, hashed_password, tokens) VALUES (%s, %s, %s)',
-                    (name, hexPass, tokens,))
+            res = cur.execute('INSERT INTO "Player"(name, hashed_password, tokens, salt) VALUES (%s, %s, %s, %s)',
+                    (name, hexPass, tokens, salt,))
             self.conn.commit()
             
-        with self.conn.cursor() as cur:
-            cur.execute(
-                """INSERT INTO Player(name, hashed_password, tokens)
-                    VALUES (%(name)s, %(passwd)s, %(tkns)s)""",
-                    (name, hexPass, tokens,))
 
     def log_game(self, player_id: int, won: bool, new_token_balance: int):
         """
