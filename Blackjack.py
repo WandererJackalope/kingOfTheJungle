@@ -6,14 +6,13 @@ class Blackjack:
     This class is responsible for handling the game logic of Blackjack.
     """
 
-    def __init__(self, account: Account.Account):
+    def __init__(self, player_account: Account.Account):
         """
         This method initializes the Blackjack class.
-        :param account: Player account
+        :param player_account: Player account
         """
-        from main import account
-
-        self.player: account.player = account.player
+        self.player_account = player_account
+        self.player: player_account.player = player_account.player
         self.player_bet: int = 5
 
         # Game state
@@ -174,16 +173,16 @@ class Blackjack:
         """
         if self.outcome == "Loss":
             self.player.tokens -= self.player_bet
-            if account.logged_in:
-                account.update_player_stats(False)
+            if self.player_account.logged_in:
+                self.player_account.update_player_stats(False)
         elif self.outcome == "Win":
             self.player.tokens += self.player_bet
-            if account.logged_in:
-                account.update_player_stats(True)
+            if self.player_account.logged_in:
+                self.player_account.update_player_stats(True)
         elif self.outcome == "Blackjack Win":
             self.player.tokens += self.player_bet * 1.5
-            if account.logged_in:
-                account.update_player_stats(True)
+            if self.player_account.logged_in:
+                self.player_account.update_player_stats(True)
 
     def reset_game(self) -> None:
         """
