@@ -82,17 +82,23 @@ class Blackjack:
         This method adds a card to the hand and updates the hand value.
         :param hand: The hand to add a card to.
         """
+        if self.turn_ended:  # Prevent any actions after the turn ends
+            return
+        
         hand += self.current_deck.pull_cards()  # Add 1 card to the passed hand
         # Update the hand value for the specific hand passed
         if hand == self.player_hand:
             self.player_hand_value = self.update_hand_value(hand)
+            # Check if the player busts
+            if self.player_hand_value > 21:
+                self.player_bust = True
+                self.turn_ended = True
+                self.reset_game()
+            elif self.player_hand_value == 21:
+                self.turn_ended = True  # Automatically end turn if 21
+                self.house_play()
         elif hand == self.house_hand:
             self.house_hand_value = self.update_hand_value(hand)
-
-        if self.player_hand_value > 21:
-            self.player_bust = True
-            self.turn_ended = True
-            self.reset_game()
 
     def house_play(self) -> None:
         """
@@ -107,15 +113,16 @@ class Blackjack:
         """
         This method ends the player's turn and starts the house's turn.
         """
-        self.turn_ended = True
-        self.house_play()
+        if self.player_hand_value != 21:
+            self.turn_ended = True  # Mark turn as ended
+            self.house_play()
 
     def double_down(self):
         """
         This method doubles the player's bet and ends the player's turn.
         """
         self.turn_ended = True
-        self.player_bet *= self.player_bet
+        self.player_bet *= 2
         self.add_to_hand(self.player_hand)
         self.house_play()
 
