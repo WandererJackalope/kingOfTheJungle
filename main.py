@@ -29,7 +29,7 @@ text_box_color = WHITE
 active = False
 
 # Submit button
-button_rect = pygame.Rect(550, 100, 100, 50)
+submit_button_rect = pygame.Rect(550, 100, 100, 50)
 
 # Font / Buttons
 font = pygame.font.Font("assets/CinzelDecorative-Bold.ttf", 32)
@@ -122,17 +122,17 @@ while True:
                     blackjack = Blackjack(account)
                     playing_blackjack = True
             
-            if text_box_rect.collidepoint(event.pos):
-                active = True
-                text_box_color = BLUE
-            else:
-                active = False
-                text_box_color = WHITE
+                if text_box_rect.collidepoint(event.pos):
+                    active = True
+                    text_box_color = BLUE
+                else:
+                    active = False
+                    text_box_color = WHITE
 
-            # Submit button logic
-            if button_rect.collidepoint(event.pos):
-                print("Submitted Text:", text)
-                text = ""  # Clear the text box after submission
+                # Submit button logic
+                if submit_button_rect.collidepoint(event.pos):
+                    print("Submitted Text:", text)
+                    text = ""  # Clear the text box after submission
 
             if event.type == pygame.KEYDOWN and active:
                 if event.key == pygame.K_RETURN:
@@ -212,11 +212,7 @@ while True:
         screen.blit(text_surface, (text_box_rect.x + 5, text_box_rect.y + 10))
 
         # Draw the submit button
-        pygame.draw.rect(screen, GRAY, button_rect)
-        pygame.draw.rect(screen, BLACK, button_rect, 2)  # Border
-        button_text = font.render("Submit", True, BLACK)
-        button_text_rect = button_text.get_rect(center=button_rect.center)
-        screen.blit(button_text, button_text_rect)
+        draw_button("Submit", submit_button_rect, BROWN)
 
     if playing_blackjack:  # checks if they are playing blackjack
         # Fill the screen with green
