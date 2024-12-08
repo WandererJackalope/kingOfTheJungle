@@ -13,7 +13,7 @@ class Blackjack:
         """
         self.player_account = player_account
         self.player: player_account.player = player_account.player
-        self.player_bet: int = 5
+        self.player_bet: int = 0
 
         # Game state
         self.game_in_progress: bool = False
@@ -121,10 +121,11 @@ class Blackjack:
         """
         This method doubles the player's bet and ends the player's turn.
         """
-        self.turn_ended = True
-        self.player_bet *= 2
-        self.add_to_hand(self.player_hand)
-        self.house_play()
+        if (self.player_bet * 2) < self.player.tokens:
+            self.turn_ended = True
+            self.player_bet *= 2
+            self.add_to_hand(self.player_hand)
+            self.house_play()
 
     def check_game_outcome(self) -> None:
         """
