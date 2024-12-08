@@ -12,7 +12,7 @@ class Account:
         """
         self.player: db.Player = db.Player(-1, "Player", 1000, 0, 0)
         self.logged_in: bool = False
-        self.login_message: str = "Unable to login missing db_uri"
+        self.login_message: str = "Unable to login missing db_uri, using default player"
         self.db_uri: str = ""  # TODO: Add your database URI here as a string
         if self.db_uri != "":
             self.game_db: db.GameDB = db.GameDB(self.db_uri)
