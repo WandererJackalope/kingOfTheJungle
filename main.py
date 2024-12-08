@@ -149,15 +149,15 @@ while True:
                 if login_button_rect.collidepoint(event.pos):
                     print("username:", username)
                     print("password:", password)
+                    account.login(username, password)
                     username = ""  # Clear the text box after submission
                     password = ""
-                    account.login(username, password)
                 if create_account_button_rect.collidepoint(event.pos):
                     print("username:", username)
                     print("password:", password)
+                    account.create_user(username, password)
                     username = ""  # Clear the text box after submission
                     password = ""
-                    account.create_user(username, password)
 
             if event.type == pygame.KEYDOWN and active_username:
                 if event.key == pygame.K_BACKSPACE:
