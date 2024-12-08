@@ -230,6 +230,10 @@ while True:
                         blackjack.raise_bet(5)
                     if lower_button.collidepoint(event.pos):
                         blackjack.lower_bet(5)
+                    if double_button.collidepoint(event.pos):
+                        blackjack.raise_bet(blackjack.player_bet)  # Double the player's bet
+                    if zero_button.collidepoint(event.pos): 
+                        blackjack.player_bet = 0  # Reset the bet to 0
                     if play_again_button.collidepoint(event.pos):
                         blackjack.start_game()
                         blackjack.game_in_progress = True
@@ -303,9 +307,6 @@ while True:
         # Stay button
         draw_button("Stay", stay_button, BROWN)
 
-        draw_button("2x", double_button, GOLD)
-
-        draw_button("0", zero_button, GRAY)
 
         if not blackjack.game_in_progress and not blackjack.turn_ended:
             # Raise button
@@ -314,6 +315,11 @@ while True:
             draw_button("Lower", lower_button, BROWN)
             # Ready button
             draw_button("Play", play_button, GOLD)
+
+            draw_button("2x", double_button, GOLD)
+
+            draw_button("0", zero_button, GRAY)
+
         elif not blackjack.game_in_progress and blackjack.turn_ended:
             # Raise button
             draw_button("Raise", raise_button, BROWN)
@@ -323,6 +329,10 @@ while True:
             draw_button("Play Again", play_again_button, GOLD)
             # Quit button
             draw_button("Quit", mid_game_quit_button, GRAY)
+            
+            draw_button("2x", double_button, GOLD)
+
+            draw_button("0", zero_button, GRAY)
 
         # displays the card image
         load_and_display_image('assets/PNG-cards-1.3/back_of_card.png', (106, 100))  # file path - position
