@@ -71,6 +71,25 @@ def load_and_display_image(file_path: str, image_position: tuple):
     screen = pygame.display.get_surface()
     screen.blit(image, image_position)
 
+def update_input_boxes():
+    # Recalculate positions and sizes based on screen size
+    username_box_rect.width = SCREEN_WIDTH * 0.31  # 31% of screen width
+    username_box_rect.height = SCREEN_HEIGHT * 0.07  # 7% of screen height
+    username_box_rect.x = SCREEN_WIDTH * 0.34  # 34% of screen width for centering
+    username_box_rect.y = SCREEN_HEIGHT * 0.36  # 36% of screen height for positioning
+    
+    password_box_rect.width = SCREEN_WIDTH * 0.31  # 31% of screen width
+    password_box_rect.height = SCREEN_HEIGHT * 0.07  # 7% of screen height
+    password_box_rect.x = SCREEN_WIDTH * 0.34  # 34% of screen width for centering
+    password_box_rect.y = SCREEN_HEIGHT * 0.46  # 46% of screen height for positioning
+
+    # Update button size and position
+    submit_button_rect.width = SCREEN_WIDTH * 0.14  # 14% of screen width
+    submit_button_rect.height = SCREEN_HEIGHT * 0.07  # 7% of screen height
+    submit_button_rect.x = SCREEN_WIDTH * 0.43  # 43% of screen width for centering
+    submit_button_rect.y = SCREEN_HEIGHT * 0.56  # 56% of screen height for positioning
+   
+
 def update_buttons():
     global blackjack_button, play_button, mid_game_quit_button, play_again_button
     global hit_button, double_down_button, stay_button, raise_button, lower_button, zero_button, double_button
@@ -78,7 +97,7 @@ def update_buttons():
     global font
 
     # Update button sizes
-    button_width = (SCREEN_WIDTH / 100) * 12
+    button_width = (SCREEN_WIDTH / 100) * 12.4
     button_height = (SCREEN_HEIGHT / 100) * 5
 
     # Update buttons
@@ -100,16 +119,18 @@ def update_buttons():
                                ((SCREEN_HEIGHT / 16) * 7) - (button_height / 2), button_width, button_height)
     lower_button = pygame.Rect(((SCREEN_WIDTH / 16) * 2) - (button_width / 2),
                                ((SCREEN_HEIGHT / 16) * 9) - (button_height / 2), button_width, button_height)
+
+    login_button_rect = pygame.Rect(((SCREEN_WIDTH / 5) * 2.1) - (button_width / 2),
+                               ((SCREEN_HEIGHT / 16) * 9) - (button_height / 2), button_width, button_height)
+    create_account_button_rect = pygame.Rect(((SCREEN_WIDTH / 5) * 2.87)  - (button_width / 2),
+                               ((SCREEN_HEIGHT / 16) * 9) - (button_height / 2), button_width, button_height)
     
     double_button = pygame.Rect(raise_button.right + 10, raise_button.top, button_width / 4, button_height)
 
     zero_button = pygame.Rect(lower_button.right + 10, lower_button.top, button_width / 4, button_height) 
 
-    login_button_rect = pygame.Rect(440, 380, 190, 50)
-    create_account_button_rect = pygame.Rect(650, 380, 190, 50)
-
     # Update font size dynamically
-    font_size = int(SCREEN_HEIGHT / 38)  # Adjust font size based on screen height
+    font_size = int(SCREEN_HEIGHT / 42)  # Adjust font size based on screen height
     font = pygame.font.Font("assets/CinzelDecorative-Bold.ttf", font_size)
 
 
@@ -125,6 +146,7 @@ while True:
             SCREEN_WIDTH, SCREEN_HEIGHT = event.w, event.h
             screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE)
             update_buttons()
+            update_input_boxes()
 
         if main_menu:  # check if they are on the main menu
             if event.type == pygame.MOUSEBUTTONDOWN:  # Check if the button is clicked
