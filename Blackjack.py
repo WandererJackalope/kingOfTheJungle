@@ -50,6 +50,10 @@ class Blackjack:
         self.house_hand = self.current_deck.pull_cards(2)
         self.house_hand_value = self.update_hand_value(self.house_hand)
 
+        if self.player_hand_value == 21:
+            self.turn_ended = True
+            self.house_play()
+
     def update_hand_value(self, hand: list[str]) -> int:
         """
         This method updates the value of the hand.
@@ -121,6 +125,9 @@ class Blackjack:
         """
         This method doubles the player's bet and ends the player's turn.
         """
+        if self.turn_ended:  # Prevent any actions after the turn ends
+            return
+        
         if (self.player_bet * 2) < self.player.tokens:
             self.turn_ended = True
             self.player_bet *= 2

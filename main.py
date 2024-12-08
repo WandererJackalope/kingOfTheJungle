@@ -130,9 +130,6 @@ def update_buttons():
 
     zero_button = pygame.Rect(lower_button.right + 10, lower_button.top, button_width / 4, button_height) 
 
-    # login_button_rect = pygame.Rect(440, 380, 190, 50)
-    # create_account_button_rect = pygame.Rect(650, 380, 190, 50)
-    #login_message_rect = pygame.Rect(380, 450, 590, 50)
 
     # Update font size dynamically
     font_size = int(SCREEN_HEIGHT / 42)  # Adjust font size based on screen height
