@@ -73,7 +73,7 @@ def load_and_display_image(file_path: str, image_position: tuple):
 
 def update_buttons():
     global blackjack_button, play_button, mid_game_quit_button, play_again_button
-    global hit_button, double_down_button, stay_button, raise_button, lower_button
+    global hit_button, double_down_button, stay_button, raise_button, lower_button, zero_button, double_button
     global login_button_rect, create_account_button_rect
     global font
 
@@ -100,6 +100,11 @@ def update_buttons():
                                ((SCREEN_HEIGHT / 16) * 7) - (button_height / 2), button_width, button_height)
     lower_button = pygame.Rect(((SCREEN_WIDTH / 16) * 2) - (button_width / 2),
                                ((SCREEN_HEIGHT / 16) * 9) - (button_height / 2), button_width, button_height)
+    
+    double_button = pygame.Rect(raise_button.right + 10, raise_button.top, button_width / 4, button_height)
+
+    zero_button = pygame.Rect(lower_button.right + 10, lower_button.top, button_width / 4, button_height) 
+
     login_button_rect = pygame.Rect(440, 380, 190, 50)
     create_account_button_rect = pygame.Rect(650, 380, 190, 50)
 
@@ -185,6 +190,11 @@ while True:
                         blackjack.raise_bet(5)
                     if lower_button.collidepoint(event.pos):  # "Lower" button
                         blackjack.lower_bet(5)
+                    if double_button.collidepoint(event.pos):
+                        blackjack.raise_bet(blackjack.player_bet)  # Double the player's bet
+                    if zero_button.collidepoint(event.pos): 
+                        blackjack.player_bet = 0  # Reset the bet to 0
+                    
                     if play_button.collidepoint(event.pos):  # "Play" button
                         blackjack.start_game()
             else:
@@ -260,6 +270,10 @@ while True:
 
         # Stay button
         draw_button("Stay", stay_button, BROWN)
+
+        draw_button("2x", double_button, GOLD)
+
+        draw_button("0", zero_button, GRAY)
 
         if not blackjack.game_in_progress and not blackjack.turn_ended:
             # Raise button
