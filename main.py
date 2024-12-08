@@ -74,7 +74,7 @@ def load_and_display_image(file_path: str, image_position: tuple):
 def update_buttons():
     global blackjack_button, play_button, mid_game_quit_button, play_again_button
     global hit_button, double_down_button, stay_button, raise_button, lower_button, zero_button, double_button
-    global login_button_rect, create_account_button_rect
+    global login_button_rect, create_account_button_rect, login_message_rect
     global font
 
     # Update button sizes
@@ -107,6 +107,7 @@ def update_buttons():
 
     login_button_rect = pygame.Rect(440, 380, 190, 50)
     create_account_button_rect = pygame.Rect(650, 380, 190, 50)
+    login_message_rect = pygame.Rect(380, 450, 590, 50)
 
     # Update font size dynamically
     font_size = int(SCREEN_HEIGHT / 38)  # Adjust font size based on screen height
@@ -249,6 +250,11 @@ while True:
         pygame.draw.rect(screen, BLACK, password_box_rect, 2)  # Border
         password_surface = font.render(password, True, BLACK)
         screen.blit(password_surface, (password_box_rect.x + 5, password_box_rect.y + 10))
+
+        pygame.draw.rect(screen, BROWN, login_message_rect, 0)
+        pygame.draw.rect(screen, BLACK, login_message_rect, 2)  # Border
+        login_message_surface = font.render(account.login_message, True, BLACK)
+        screen.blit(login_message_surface, (login_message_rect.x + 5, login_message_rect.y + 10))
 
         # Draw the login and create account buttons
         draw_button("Login", login_button_rect, BROWN)
