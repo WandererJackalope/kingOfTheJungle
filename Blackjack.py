@@ -138,19 +138,33 @@ class Blackjack:
         """
         This method checks the outcome of the game.
         """
-        # Loss conditions
+        # Loss condition if the player busts
         if self.player_bust:
             self.outcome = "Loss"
-        elif self.player_hand_value < self.house_hand_value:
+            
+        # Loss condition if the house beats the player and is under or equal to 21
+        elif (self.player_hand_value < self.house_hand_value) and self.house_hand_value <= 21:
             self.outcome = "Loss"
+            
         # Blackjack win condition
         elif self.player_hand_value == 21 and len(self.player_hand) == 2:
             self.outcome = "Blackjack Win"
-        # Tie condition
+            
+        # Tie / Other conditions
         elif self.player_hand_value == self.house_hand_value:
-            self.outcome = "Tie"
+            if self.player_hand_value == 21 and self.house_hand_value != 21:
+                self.outcome = "Blackjack Win"
+            elif self.player_hand_value != 21 and self.house_hand_value == 21:
+                self.outcome = "Loss"
+            else:
+                self.outcome = "Tie"
+                
         # Win condition
-        elif self.player_hand_value > self.house_hand_value:
+        elif self.player_hand_value > self.house_hand_value and self.house_hand_value <= 21:
+            self.outcome = "Win"
+        
+        # Check if the house busts (house hand value exceeds 21)
+        elif self.house_hand_value > 21:
             self.outcome = "Win"
 
     def raise_bet(self, amount: int) -> None:
