@@ -19,7 +19,21 @@ GRAY = (200, 200, 200)
 GOLD = (245, 197, 66)
 BROWN = (163, 112, 57)
 CASINO_GREEN = (31, 124, 77)
+BLUE = (173, 216, 230)
 SCREEN_WIDTH, SCREEN_HEIGHT = 1280, 720
+
+# Login screen variables
+username = "username"
+password = "password"
+username_box_rect = pygame.Rect(440, 260, 400, 50)
+password_box_rect = pygame.Rect(440, 320, 400, 50)
+username_box_color = WHITE
+password_box_color = WHITE
+active_username = False
+active_password = False
+
+# Submit button
+submit_button_rect = pygame.Rect(550, 100, 100, 50)
 
 # Font / Buttons
 font = pygame.font.Font("assets/CinzelDecorative-Bold.ttf", 32)
@@ -29,7 +43,6 @@ button_height = (SCREEN_HEIGHT / 100) * 5
 # Screen dimensions
 screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT), pygame.RESIZABLE, pygame.RESIZABLE)
 pygame.display.set_caption("Casino Sim")
-
 
 # Games
 main_menu = True
@@ -61,6 +74,7 @@ def load_and_display_image(file_path: str, image_position: tuple):
 def update_buttons():
     global blackjack_button, play_button, mid_game_quit_button, play_again_button
     global hit_button, double_down_button, stay_button, raise_button, lower_button
+    global login_button_rect, create_account_button_rect
     global font
 
     # Update button sizes
@@ -86,6 +100,8 @@ def update_buttons():
                                ((SCREEN_HEIGHT / 16) * 7) - (button_height / 2), button_width, button_height)
     lower_button = pygame.Rect(((SCREEN_WIDTH / 16) * 2) - (button_width / 2),
                                ((SCREEN_HEIGHT / 16) * 9) - (button_height / 2), button_width, button_height)
+    login_button_rect = pygame.Rect(440, 380, 190, 50)
+    create_account_button_rect = pygame.Rect(650, 380, 190, 50)
 
     # Update font size dynamically
     font_size = int(SCREEN_HEIGHT / 38)  # Adjust font size based on screen height
@@ -111,6 +127,48 @@ while True:
                     main_menu = False
                     blackjack = Blackjack(account)
                     playing_blackjack = True
+            
+                if username_box_rect.collidepoint(event.pos):
+                    active_username = True
+                    active_password = False
+                    username_box_color = BLUE
+                    password_box_color = WHITE
+                else:
+                    active_username = False
+                    password_box_colord = WHITE
+                if password_box_rect.collidepoint(event.pos):
+                    active_username = False
+                    active_password = True
+                    password_box_color = BLUE
+                    username_box_color = WHITE
+                else:
+                    active_password = False
+                    password_box_color = WHITE
+
+                # Submit button logic
+                if login_button_rect.collidepoint(event.pos):
+                    print("username:", username)
+                    print("password:", password)
+                    username = ""  # Clear the text box after submission
+                    password = ""
+                    account.login(username, password)
+                if create_account_button_rect.collidepoint(event.pos):
+                    print("username:", username)
+                    print("password:", password)
+                    username = ""  # Clear the text box after submission
+                    password = ""
+                    account.create_user(username, password)
+
+            if event.type == pygame.KEYDOWN and active_username:
+                if event.key == pygame.K_BACKSPACE:
+                    username = username[:-1]
+                else:
+                    username += event.unicode
+            if event.type == pygame.KEYDOWN and active_password:
+                if event.key == pygame.K_BACKSPACE:
+                    password = password[:-1]
+                else:
+                    password += event.unicode
 
         if playing_blackjack:
             if blackjack.game_in_progress:  # checks if they are playing blackjack
@@ -171,6 +229,20 @@ while True:
 
         # Draw the button
         draw_button("Blackjack", blackjack_button, BROWN)
+
+        pygame.draw.rect(screen, username_box_color, username_box_rect, 0)
+        pygame.draw.rect(screen, BLACK, username_box_rect, 2)  # Border
+        username_surface = font.render(username, True, BLACK)
+        screen.blit(username_surface, (username_box_rect.x + 5, username_box_rect.y + 10))
+
+        pygame.draw.rect(screen, password_box_color, password_box_rect, 0)
+        pygame.draw.rect(screen, BLACK, password_box_rect, 2)  # Border
+        password_surface = font.render(password, True, BLACK)
+        screen.blit(password_surface, (password_box_rect.x + 5, password_box_rect.y + 10))
+
+        # Draw the login and create account buttons
+        draw_button("Login", login_button_rect, BROWN)
+        draw_button("Create Account", create_account_button_rect, BROWN)
 
     if playing_blackjack:  # checks if they are playing blackjack
         # Fill the screen with green

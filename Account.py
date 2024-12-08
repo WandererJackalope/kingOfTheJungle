@@ -12,24 +12,29 @@ class Account:
         self.player: db.Player = db.Player(-1, "Player", 1000, 0, 0)
         self.logged_in: bool = False
         self.db_uri: str = ""  # TODO: Add your database URI here as a string
+        if self.db_uri != "":
+            self.game_db: db.GameDB = db.GameDB(self.db_uri)
 
-    def login(self, name: str, password: str) -> db.Player:
+    def login(self, name: str, password: str):
         """
         This method logs the player in.
         :param name: Player username
         :param password: Player password
         :return: a player object, if successful login returns the information from the database
         """
-        pass
+        self.player.id = self.game_db.validate_player_login(name, password)
+        self.player = self.game_db.get_player_info(self.player.id)
 
-    def create_user(self, name: str, password: str) -> db.Player:
+    def create_user(self, name: str, password: str):
         """
         This method creates a new user.
         :param name: new Player's username
         :param password: new Player's password
         :return: the newly created Player object
         """
-        pass
+        self.game_db.add_player_user(name, password)
+        self.player.id = self.game_db.validate_player_login(name, password)
+        self.player = self.game_db.get_player_info(self.player.id)
 
     def update_player_stats(self, won: bool) -> None:
         """
